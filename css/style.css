@@ -1,0 +1,44 @@
+
+/* Nav line */
+nav {
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    display: inline;
+    margin: 0 10px;
+}
+
+.active {
+    color: #982c61;
+}
+
+
+/* Header */
+header {
+    padding: 10px 0 0 0;
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+}
+
+
+/* Footer */
+/*footer p {*/
+/*    text-align: center;*/
+/*    padding: 1em 0;*/
+/*    background-color: #f1f1f1;*/
+/*}*/
+
+/* Notes */
+.notes {
+    text-align: center;
+    padding: 10em 0;
+    background-color: #f1f1f1;
+}
