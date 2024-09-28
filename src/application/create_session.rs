@@ -67,15 +67,14 @@ impl Interactor<CreateSessionDTO, CreateSessionResultDTO> for CreateSession<'_> 
             )
         }
         
-        let hashed_password = self.password_hasher.hash(&data.password).await;
-        if self.credential_provider.hashed_password != hashed_password {
+        if !self.password_hasher.verify(&data.password, &self.credential_provider.hashed_password).await {
             return Err(
                 ApplicationError::InvalidData(
                     ErrorContent::from("Invalid username and password pair")
                 )
             )
         }
-        
+
         Ok(CreateSessionResultDTO {
             username: data.username
         })
