@@ -73,7 +73,7 @@ impl TokenProcessor {
         let data = self.data.read().unwrap();
         match data.get(token) {
             Some(username) => Ok(username.clone()),
-            None => Err("Token not found".to_string())
+            None => Err("Token not valid".to_string())
         }
     }
 }
