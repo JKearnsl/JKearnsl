@@ -15,6 +15,7 @@ pub const NOTE_BODY_MAX: usize = 32768;
 pub struct Note {
     pub id: NoteId,
     pub title: String,
+    pub description: String,
     pub body: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>
@@ -39,6 +40,7 @@ impl Note {
         Ok(Self {
             id: generate_id(NOTE_ID_SIZE),
             title,
+            description: body.chars().take(NOTE_DESCRIPTION_MAX).collect(),
             body,
             created_at: Utc::now(),
             updated_at: None
@@ -53,11 +55,10 @@ impl Note {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NoteWithDescription {
+pub struct NoteListItem {
     pub id: NoteId,
     pub title: String,
     pub description: String,
-    pub body: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>
 }
