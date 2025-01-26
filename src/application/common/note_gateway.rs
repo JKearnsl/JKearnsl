@@ -4,7 +4,8 @@ use crate::domain::models::note::{Note, NoteId, NoteListItem};
 
 #[async_trait]
 pub trait NoteReader{
-    async fn get(&self, id: &NoteId) -> Option<Note>;
+    async fn get_by_id(&self, id: &NoteId) -> Option<Note>;
+    async fn get_by_slug(&self, slug: &str) -> Option<Note>;
     async fn range(&self, limit: &u64, offset: &u64) -> Vec<NoteListItem>;
 }
 
@@ -44,13 +45,18 @@ pub mod test {
 
     #[async_trait]
     impl NoteReader for MockNoteGateway {
-        async fn get(&self, id: &NoteId) -> Option<Note> {
+        async fn get_by_id(&self, id: &NoteId) -> Option<Note> {
             self.notes.lock().await.get(id).cloned()
+        }
+
+        async fn get_by_slug(&self, slug: &str) -> Option<Note> {
+            self.notes.lock().await.values().find(|n| n.slug == slug).cloned()
         }
 
         async fn range(&self, limit: &u64, offset: &u64) -> Vec<NoteListItem> {
             self.notes.lock().await.values().cloned().collect().map(|n| NoteListItem {
                 id: n.id,
+                slug: n.slug,
                 title: n.title,
                 description: n.description,
                 created_at: n.created_at,
