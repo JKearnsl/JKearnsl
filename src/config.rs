@@ -32,7 +32,7 @@ impl Config {
             Ok(parallelism) => usize::from(parallelism),
             Err(_) => 1,
         };
-        
+
         let tsl_cert = std::env::var("TLS_CERT").ok();
         let tsl_key = std::env::var("TLS_KEY").ok();
         let tls = match (tsl_cert, tsl_key) {

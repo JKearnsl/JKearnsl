@@ -5,7 +5,7 @@ use argon2::{Argon2, Params, password_hash::{
 use async_trait::async_trait;
 
 use crate::application::common::hasher::Hasher;
-
+use crate::domain::models::hash::Hash;
 
 pub struct Argon2PasswordHasher {
     hasher: Argon2<'static>
@@ -21,7 +21,7 @@ impl Argon2PasswordHasher {
                     2048,
                     64,
                     4,
-                    Some(64)
+                    Some(32)
                 ).unwrap()
             )
         }
@@ -30,32 +30,30 @@ impl Argon2PasswordHasher {
 
 #[async_trait]
 impl Hasher for Argon2PasswordHasher {
-    async fn hash(&self, value: &str) -> String {
+    async fn hash(&self, value: &str) -> Hash {
         let hasher = self.hasher.clone();
         let value = value.to_owned();
-        let hash = tokio::task::spawn_blocking(move || {
+        tokio::task::spawn_blocking(move || {
             let salt = SaltString::generate(&mut OsRng);
             let hash = hasher.hash_password(
                 value.as_bytes(),
                 &salt
             ).unwrap();
-            hash.to_string()
-        }).await.unwrap();
-        hash
+            Hash::try_from(hash.into()).unwrap()
+        }).await.unwrap()
     }
 
-    async fn verify(&self, value: &str, hash: &str) -> bool {
+    async fn verify(&self, value: &str, hash: &Hash) -> bool {
         let hasher = self.hasher.clone();
         let value = value.to_owned();
         let hash = hash.to_owned();
-        let result = tokio::task::spawn_blocking(move || {
-            let parsed_hash = PasswordHash::new(&hash).unwrap();
+        tokio::task::spawn_blocking(move || {
+            let parsed_hash = PasswordHash::from(&hash).unwrap();
             hasher.verify_password(
                 value.as_bytes(),
                 &parsed_hash
             ).is_ok()
-        }).await.unwrap();
-        result
+        }).await.unwrap()
     }
 }
 

@@ -8,6 +8,7 @@ use crate::domain::models::note::{
     NOTE_BODY_LENGTH, 
     NoteId
 };
+use async_trait::async_trait;
 
 pub const NOTE_TABLE: &str = "notes";
 
@@ -21,6 +22,7 @@ pub struct Note {
     pub updated_at: Option<DateTime<Utc>>
 }
 
+#[async_trait]
 impl CreateIFNotExists for Note {
     async fn create_if_not_exists(db_pool: &DbPool) -> Result<(), sqlx::Error> {
         sqlx::query(format!(

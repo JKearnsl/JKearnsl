@@ -13,6 +13,23 @@ impl Hash {
     }
 }
 
+impl TryFrom<&[u8]> for Hash {
+    type Error = String;
+
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        if value.len() != HASH_LENGTH {
+            return Err(format!(
+                "expected {} bytes, got {}",
+                HASH_LENGTH,
+                value.len()
+            ));
+        }
+        let mut hash = [0; HASH_LENGTH];
+        hash.copy_from_slice(value);
+        Ok(Hash(hash))
+    }
+}
+
 impl Serialize for Hash {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where

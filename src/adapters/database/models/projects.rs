@@ -8,6 +8,7 @@ use crate::domain::models::project::{
     PROJECT_URL_LENGTH_MAX, 
     ProjectId
 };
+use async_trait::async_trait;
 
 pub const PROJECT_TABLE: &str = "projects";
 
@@ -20,6 +21,7 @@ pub struct Project {
     pub created_at: DateTime<Utc>,
 }
 
+#[async_trait]
 impl CreateIFNotExists for Project {
     async fn create_if_not_exists(db_pool: &DbPool) -> Result<(), sqlx::Error> {
         sqlx::query(format!(
