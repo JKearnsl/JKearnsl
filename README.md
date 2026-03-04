@@ -1,4 +1,4 @@
 ### Hi there 👋
 
 #### Visitors (Since 2023/11/13)
-![](https://moe-counter.glitch.me/get/@JKearnsl?theme=rule34)
+![](https://count.getloli.com/@JKearnsl?theme=rule34)
