@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use leptos_router::hooks::use_location;
 
 #[component]
@@ -21,7 +20,6 @@ pub fn Header(theme: RwSignal<String>) -> impl IntoView {
     ];
 
     view! {
-        <Style id="comp-header">{include_str!("./header.css")}</Style>
         <header class="site-header">
             <div class="wrap header-inner">
                 <a href="/" class="logo-link">

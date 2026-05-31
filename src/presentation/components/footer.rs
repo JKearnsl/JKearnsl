@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::api::users::get_self;
 
 
@@ -13,7 +12,6 @@ pub fn Footer() -> impl IntoView {
     let current_user = Resource::new(|| (), |_| get_self());
 
     view! {
-        <Style id="comp-footer">{include_str!("./footer.css")}</Style>
         <footer class="site-footer">
             <div class="wrap">
                 <div class="footer-grid">

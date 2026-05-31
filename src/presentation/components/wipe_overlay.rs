@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 
 #[component]
 pub fn WipeOverlay() -> impl IntoView {
@@ -81,7 +80,6 @@ pub fn WipeOverlay() -> impl IntoView {
     };
 
     view! {
-        <Style id="comp-wipe">{include_str!("./wipe_overlay.css")}</Style>
         <div
             class=wipe_class
             on:animationend=move |_ev| {
