@@ -32,6 +32,7 @@ pub fn Page() -> impl IntoView {
 
     view! {
         <Style id="page-control">{include_str!("./control.css")}</Style>
+        <Style id="ui-card">{include_str!("../../components/ui/card/card.css")}</Style>
         <Title text="Панель управления"/>
         <main class="page admin-page">
             <div class="wrap">

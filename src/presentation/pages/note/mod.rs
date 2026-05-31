@@ -17,6 +17,7 @@ pub fn Page() -> impl IntoView {
         <Style id="notes-note-content">{include_str!("../../components/notes/note_content/note_content.css")}</Style>
         <Style id="notes-cover">{include_str!("../../components/notes/cover.css")}</Style>
         <Style id="ui-badge">{include_str!("../../components/ui/badge/badge.css")}</Style>
+        <Style id="ui-chip">{include_str!("../../components/ui/chip/chip.css")}</Style>
         <main class="page">
             <Suspense fallback=move || view! { <div class="note-loading type-mono">"// загрузка..."</div> }>
                 {move || note.get().map(|opt| match opt {
