@@ -1,0 +1,60 @@
+.tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  min-height: 50px;
+  cursor: text;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.tags-input:focus-within {
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--terracotta) 12%, transparent);
+}
+.tags-input-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--cream);
+  border-radius: 999px;
+  padding: 4px 4px 4px 10px;
+  user-select: none;
+}
+.tags-input-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: color-mix(in oklab, var(--cream) 18%, transparent);
+  color: var(--cream);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: background .15s ease;
+}
+.tags-input-remove:hover { background: color-mix(in oklab, var(--cream) 35%, transparent); }
+.tags-input-field {
+  flex: 1;
+  min-width: 120px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--ink);
+  padding: 3px 0;
+}
+.tags-input-field::placeholder { color: var(--muted); opacity: .5; }

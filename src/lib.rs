@@ -1,9 +1,16 @@
+#![recursion_limit = "512"]
+
 pub mod presentation;
-pub mod adapters;
-pub mod ioc;
-pub mod interactor_factory;
-pub mod application;
 pub mod domain;
+
+#[cfg(feature = "ssr")]
+pub mod adapters;
+#[cfg(feature = "ssr")]
+pub mod ioc;
+#[cfg(feature = "ssr")]
+pub mod interactor_factory;
+#[cfg(feature = "ssr")]
+pub mod application;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]

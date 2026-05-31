@@ -6,7 +6,7 @@ use crate::application::common::id_provider::IdProvider;
 use crate::application::common::interactor::Interactor;
 use crate::application::common::user_gateway::{UserGateway, UserReader, UserWriter};
 use crate::domain::models::hash::Hash;
-use crate::domain::models::user::User;
+use crate::domain::models::user::{User, USERNAME_MAX};
 
 #[derive(Debug, Serialize)]
 pub struct CreateUserRequest{
@@ -14,10 +14,9 @@ pub struct CreateUserRequest{
     pub password_hash: Hash
 }
 
-
 pub struct CreateUser<'interactor_life> {
     pub id_provider: Box<dyn IdProvider>,
-    pub user_gateway: &'interactor_life dyn UserGateway,
+    pub user_gateway: &'interactor_life dyn UserGateway
 }
 
 #[async_trait]
@@ -26,10 +25,15 @@ impl Interactor<CreateUserRequest, ()> for CreateUser<'_> {
         if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);
         }
+
+        if data.username.len() > USERNAME_MAX {
+            return Err(ApplicationError::ValidationError(HashMap::from([(
+                "username".to_string(),
+                format!("is too long: {} > {}", data.username.len(), USERNAME_MAX))
+            ])));
+        }
         
-        let user = User::create(data.username, data.password_hash).map_err(|e| {
-            ApplicationError::ValidationError(e)
-        })?;
+        let user = User::create(data.username, data.password_hash);
         
         if self.user_gateway.get_by_username(&user.username).await.is_some() {
             return Err(ApplicationError::ValidationError(HashMap::from([(

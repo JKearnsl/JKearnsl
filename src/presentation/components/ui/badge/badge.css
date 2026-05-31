@@ -1,0 +1,4 @@
+.badge {
+  padding: 6px 14px; border-radius: 999px; color: var(--cream);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+}

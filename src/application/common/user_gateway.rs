@@ -1,28 +1,32 @@
-use async_trait::async_trait;
 use crate::domain::models::user::{User, UserId};
 
 
-#[async_trait]
+
+#[allow(async_fn_in_trait)]
 pub trait UserReader{
     async fn get_by_username(&self, username: &str) -> Option<User>;
     async fn get_all(&self) -> Vec<User>;
 }
 
-#[async_trait]
+
+#[allow(async_fn_in_trait)]
 pub trait UserWriter{
     async fn save(&self, user: &User);
 }
 
-#[async_trait]
+
+#[allow(async_fn_in_trait)]
 pub trait UserRemover {
     async fn remove(&self, user_id: &UserId);
 }
+
 
 pub trait UserGateway: UserReader + UserWriter + UserRemover {}
 
 
 #[cfg(test)]
 pub mod test {
+    use async_trait::async_trait;
     use tokio::sync::Mutex;
     use super::*;
 

@@ -1,0 +1,11 @@
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 999px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  background: transparent; border: 1px solid var(--line); color: var(--ink);
+  transition: all .2s ease; cursor: pointer;
+}
+.chip:hover { border-color: var(--ink); }
+.chip-active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }

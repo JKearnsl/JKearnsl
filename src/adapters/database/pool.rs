@@ -1,3 +1,1 @@
-use sqlx::{Pool, Sqlite};
-
-pub type DbPool = Pool<Sqlite>;
+pub type DbPool = sqlx::SqlitePool;

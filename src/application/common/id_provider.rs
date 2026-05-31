@@ -1,8 +1,7 @@
-
 pub trait IdProvider: Send + Sync {
     fn session(&self) -> Option<&String>;
     fn username(&self) -> Option<&String>;
-    fn is_auth(&self) -> &bool;
+    fn is_auth(&self) -> bool;
 }
 
 
@@ -25,8 +24,8 @@ pub mod test {
             self.username.as_ref()
         }
 
-        fn is_auth(&self) -> &bool {
-            &self.is_auth
+        fn is_auth(&self) -> bool {
+            self.is_auth
         }
     }
 }

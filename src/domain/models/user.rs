@@ -1,6 +1,5 @@
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use crate::domain::id_generator::generate_id;
+use crate::domain::models::identifier::generate;
 use crate::domain::models::hash::Hash;
 
 pub type UserId = String;
@@ -17,18 +16,11 @@ pub struct User {
 }
 
 impl User {
-    pub fn create(username: String, password_hash: Hash) -> anyhow::Result<Self, HashMap<String, String>> {
-        if username.len() > USERNAME_MAX {
-            return Err(HashMap::from([(
-                "username".to_string(), 
-                format!("is too long: {} > {}", username.len(), USERNAME_MAX))
-            ]));
-        }
-        
-        Ok(Self {
-            id: generate_id(USER_ID_SIZE),
+    pub fn new(username: String, password_hash: Hash) -> Self {
+        Self {
+            id: generate(USER_ID_SIZE),
             username,
             password_hash
-        })
+        }
     }
 }

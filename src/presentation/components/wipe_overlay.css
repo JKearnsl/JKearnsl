@@ -1,0 +1,10 @@
+.wipe {
+  position: fixed; inset: 0; z-index: 9000;
+  background: var(--ink);
+  transform: translateY(100%);
+  pointer-events: none;
+}
+.wipe.in  { animation: wipeIn  .45s cubic-bezier(.7,0,.3,1) forwards }
+.wipe.out { animation: wipeOut .45s cubic-bezier(.7,0,.3,1) forwards }
+@keyframes wipeIn  { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes wipeOut { from { transform: translateY(0) } to { transform: translateY(-100%) } }

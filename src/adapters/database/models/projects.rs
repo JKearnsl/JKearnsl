@@ -1,14 +1,8 @@
-use chrono::{DateTime, Utc};
 use crate::adapters::database::models::CreateIFNotExists;
 use crate::adapters::database::pool::DbPool;
-use crate::domain::models::project::{
-    PROJECT_ID_SIZE, 
-    PROJECT_TITLE_LENGTH, 
-    PROJECT_DESCRIPTION_LENGTH, 
-    PROJECT_URL_LENGTH_MAX, 
-    ProjectId
-};
 use async_trait::async_trait;
+use chrono::{DateTime, Utc};
+use crate::domain::models::project::ProjectId;
 
 pub const PROJECT_TABLE: &str = "projects";
 
@@ -24,22 +18,17 @@ pub struct Project {
 #[async_trait]
 impl CreateIFNotExists for Project {
     async fn create_if_not_exists(db_pool: &DbPool) -> Result<(), sqlx::Error> {
-        sqlx::query(format!(
-            "CREATE TABLE IF NOT EXISTS {table} (
-                id CHAR({id_size}) PRIMARY KEY,
-                title VARCHAR({title_max}) NOT NULL,
-                description VARCHAR({description_max}) NOT NULL,
-                url VARCHAR({url_max}) NOT NULL,
+        sqlx::query(
+            "CREATE TABLE IF NOT EXISTS projects (
+                id CHAR(16) PRIMARY KEY,
+                title VARCHAR(128) NOT NULL,
+                description VARCHAR(256) NOT NULL,
+                url VARCHAR(2048),
                 created_at TIMESTAMP WITH TIME ZONE NOT NULL
-            );",
-            table = PROJECT_TABLE,
-            id_size = PROJECT_ID_SIZE,
-            title_max = PROJECT_TITLE_LENGTH.1,
-            description_max = PROJECT_DESCRIPTION_LENGTH.1,
-            url_max = PROJECT_URL_LENGTH_MAX
-        ).as_str())
-            .execute(db_pool)
-            .await?;
+            );"
+        )
+        .execute(db_pool)
+        .await?;
         Ok(())
     }
 }

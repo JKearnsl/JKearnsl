@@ -1,5 +1,8 @@
 pub mod notes;
 pub mod projects;
+pub mod users;
+pub mod tags;
+pub mod note_tags;
 
 use async_trait::async_trait;
 use crate::adapters::database::pool::DbPool;

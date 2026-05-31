@@ -1,7 +1,6 @@
-use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use crate::domain::id_generator::generate_id;
+use super::identifier::generate;
 
 pub type ProjectId = String;
 
@@ -21,37 +20,14 @@ pub struct Project {
 }
 
 impl Project {
-    pub fn create(title: String, description: String, url: Option<String>) -> anyhow::Result<Self, HashMap<String, String>> {
-        if title.len() > PROJECT_TITLE_MAX {
-            return Err(HashMap::from([(
-                "title".to_string(), 
-                format!("is too long: {} > {}", title.len(), PROJECT_TITLE_MAX)
-            )]));
-        }
-        
-        if description.len() > PROJECT_DESCRIPTION_MAX {
-            return Err(HashMap::from([(
-                "description".to_string(), 
-                format!("is too long: {} > {}", description.len(), PROJECT_DESCRIPTION_MAX)
-            )]));
-        }
-        
-        if let Some(url) = &url {
-            if url.len() > PROJECT_URL_MAX {
-                return Err(HashMap::from([(
-                    "url".to_string(), 
-                    format!("is too long: {} > {}", url.len(), PROJECT_URL_MAX)
-                )]));
-            }
-        }
-        
-        Ok(Self {
-            id: generate_id(PROJECT_ID_SIZE),
+    pub fn create(title: String, description: String, url: Option<String>) -> Self {
+        Self {
+            id: generate(PROJECT_ID_SIZE),
             title,
             description,
             url,
             created_at: Utc::now()
-        })
+        }
     }
 
     pub fn update(&mut self, title: String, description: String, url: Option<String>) {

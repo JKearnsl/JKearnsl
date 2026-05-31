@@ -1,4 +1,11 @@
 pub mod note;
+#[cfg(feature = "ssr")]
 pub mod project;
+#[cfg(feature = "ssr")]
 pub mod user;
+#[cfg(feature = "ssr")]
 pub mod hash;
+#[cfg(feature = "ssr")]
+pub mod session;
+#[cfg(feature = "ssr")]
+pub mod identifier;

@@ -21,7 +21,7 @@ pub struct GetUserList<'interactor_life> {
 }
 
 #[async_trait]
-impl Interactor<(), UserListResult> for GetUserList {
+impl Interactor<(), UserListResult> for GetUserList<'_> {
     async fn execute(&self, _data: ()) -> Result<UserListResult, ApplicationError> {
 
         if !self.id_provider.is_auth() {

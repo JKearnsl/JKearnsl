@@ -1,0 +1,30 @@
+.admin-page { padding-top: 56px; padding-bottom: 96px; }
+
+.admin-header { padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+.admin-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.admin-eyebrow .eyebrow-line { width: 32px; height: 1px; background: var(--terracotta); flex-shrink: 0; }
+.admin-title-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.admin-user {
+  padding: 6px 14px; border-radius: 999px;
+  background: color-mix(in oklab, var(--terracotta) 10%, transparent);
+  color: var(--terracotta); border: 1px solid color-mix(in oklab, var(--terracotta) 25%, transparent);
+}
+.admin-loading { padding: 80px; text-align: center; color: var(--muted); }
+
+.admin-tabs {
+  display: flex; gap: 0; margin-top: 36px;
+  border-bottom: 1px solid var(--line);
+}
+.admin-tab {
+  padding: 14px 28px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: color .2s ease, border-color .2s ease;
+}
+.admin-tab:hover { color: var(--ink); }
+.admin-tab-active { color: var(--ink); border-bottom-color: var(--terracotta); }
+
+.admin-content { padding-top: 48px; }

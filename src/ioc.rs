@@ -1,66 +1,66 @@
 use cfg_if::cfg_if;
 
-cfg_if! {if #[cfg(feature = "ssr")] {
-    use std::sync::Arc;
+cfg_if! { if #[cfg(feature = "ssr")] {
+    use crate::application::note::list::ListNotes;
+    use crate::application::note::get_by_slug::GetBySlugNote;
+    use crate::application::note::get_by_id_admin::GetByIdNoteAdmin;
+    use crate::application::note::create::CreateNote;
+    use crate::application::note::update::UpdateNote;
+    use crate::application::note::delete::DeleteNote;
     use crate::application::common::id_provider::IdProvider;
-    use crate::application::create_session::CreateSession;
-    use crate::application::get_user_self::GetUserSelf;
-    use crate::adapters::basic_credentials_provider::BasicCredentialsProvider;
-    use crate::application::common::cred_provider::CredentialsProvider;
-    use crate::domain::services::note::NoteService;
-    use crate::domain::services::project::ProjectService;
-    use crate::domain::services::validator::ValidatorService;
     use crate::interactor_factory::InteractorFactory;
-    
-    use crate::adapters::argon2_password_hasher::Argon2PasswordHasher;
-    use crate::adapters::database::note_db::NoteGateway;
+    use crate::adapters::database::note::NoteGateway;
     use crate::adapters::database::pool::DbPool;
-    use crate::adapters::database::project_db::ProjectGateway;
-    
+
     pub struct IoC {
         note_gateway: NoteGateway,
-        note_service: NoteService,
-    
-        project_gateway: ProjectGateway,
-        project_service: ProjectService,
-    
-        password_hasher: Argon2PasswordHasher,
-        validator: ValidatorService,
-        credential_provider: Arc<dyn CredentialsProvider>,
     }
-    
+
     impl IoC {
-        pub fn new(
-            db_pool: DbPool,
-            credential_provider: BasicCredentialsProvider,
-        ) -> Self {
+        pub fn new(db_pool: DbPool) -> Self {
             Self {
-                note_gateway: NoteGateway::new(db_pool.clone()),
-                note_service: NoteService { },
-    
-                project_gateway: ProjectGateway::new(db_pool.clone()),
-                project_service: ProjectService { },
-    
-                password_hasher: Argon2PasswordHasher::new(),
-                validator: ValidatorService::new(),
-                credential_provider: Arc::new(credential_provider),
+                note_gateway: NoteGateway::new(db_pool),
             }
         }
     }
-    
+
     impl InteractorFactory for IoC {
-        fn get_user_self(&self, id_provider: Box<dyn IdProvider>) -> GetUserSelf {
-            GetUserSelf {
+        fn list_notes(&self) -> ListNotes<'_> {
+            ListNotes { note_reader: &self.note_gateway, all: false }
+        }
+
+        fn list_all_notes(&self) -> ListNotes<'_> {
+            ListNotes { note_reader: &self.note_gateway, all: true }
+        }
+
+        fn get_note_by_slug(&self) -> GetBySlugNote<'_> {
+            GetBySlugNote { note_reader: &self.note_gateway }
+        }
+
+        fn get_note_by_id_admin(&self) -> GetByIdNoteAdmin<'_> {
+            GetByIdNoteAdmin { note_reader: &self.note_gateway }
+        }
+
+        fn create_note(&self, id_provider: Box<dyn IdProvider>) -> CreateNote<'_> {
+            CreateNote {
+                note_reader: &self.note_gateway,
+                note_writer: &self.note_gateway,
                 id_provider,
             }
         }
-    
-        fn create_session(&self, id_provider: Box<dyn IdProvider>) -> CreateSession {
-            CreateSession {
+
+        fn update_note(&self, id_provider: Box<dyn IdProvider>) -> UpdateNote<'_> {
+            UpdateNote {
+                note_reader: &self.note_gateway,
+                note_writer: &self.note_gateway,
                 id_provider,
-                password_hasher: &self.password_hasher,
-                validator: &self.validator,
-                credential_provider: Arc::clone(&self.credential_provider),
+            }
+        }
+
+        fn delete_note(&self, id_provider: Box<dyn IdProvider>) -> DeleteNote<'_> {
+            DeleteNote {
+                note_remover: &self.note_gateway,
+                id_provider,
             }
         }
     }

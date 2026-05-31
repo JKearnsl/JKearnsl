@@ -1,0 +1,6 @@
+.note-card-inner  { padding: 0; overflow: hidden; display: flex; flex-direction: column; text-decoration: none; }
+.note-card-cover  { position: relative; aspect-ratio: 5/4; }
+.note-card-body   { padding: 20px 22px 22px; }
+.note-card-meta   { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.note-card-title  { font-size: 22px; text-wrap: pretty; }
+.note-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
