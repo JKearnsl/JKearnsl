@@ -7,6 +7,7 @@ use crate::presentation::components::notes::{category, format, cover};
 pub fn Section(notes: Resource<Vec<NoteListItem>>) -> impl IntoView {
     view! {
         <Style id="home-featured">{include_str!("./featured.css")}</Style>
+        <Style id="notes-cover">{include_str!("../../components/notes/cover.css")}</Style>
         <section class="featured-section">
             <div class="wrap">
                 <div class="section-header">

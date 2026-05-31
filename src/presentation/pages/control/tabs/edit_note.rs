@@ -121,7 +121,7 @@ fn EditForm(
 
                 {move || result.get().map(|r| match r {
                     Err(e) => view! {
-                        <p class="sign-in-error">{e.to_string()}</p>
+                        <p class="form-error">{e.to_string()}</p>
                     }.into_any(),
                     Ok(_) => view! { <span/> }.into_any(),
                 })}

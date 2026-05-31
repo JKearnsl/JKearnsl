@@ -28,3 +28,88 @@
 .admin-tab-active { color: var(--ink); border-bottom-color: var(--terracotta); }
 
 .admin-content { padding-top: 48px; }
+
+/* ── Form wrapper ── */
+.new-post-wrap { display: flex; flex-direction: column; gap: 24px; max-width: 860px; }
+.new-post-form { display: flex; flex-direction: column; gap: 20px; }
+
+/* ── Body editor ── */
+.body-editor { gap: 0 !important; }
+.editor-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--cream-2); border: 1px solid var(--line);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+.editor-label {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.editor-tabs { display: flex; gap: 4px; }
+.editor-tab {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 6px;
+  color: var(--muted); transition: color .15s ease, background .15s ease;
+}
+.editor-tab:hover { color: var(--ink); }
+.editor-tab-active { background: var(--ink); color: var(--cream); }
+
+.body-textarea {
+  width: 100%; min-height: 360px; resize: vertical;
+  background: var(--paper); border: 1px solid var(--line); border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  padding: 16px 18px;
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.65; color: var(--ink);
+  outline: none; transition: border-color .2s ease;
+}
+.body-textarea:focus { border-color: var(--terracotta); }
+.body-textarea::placeholder { color: var(--muted); opacity: .45; }
+
+.editor-preview-pane {
+  min-height: 360px; padding: 20px 24px;
+  background: var(--paper); border: 1px solid var(--line); border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+/* ── Checkboxes ── */
+.form-checks { display: flex; gap: 28px; flex-wrap: wrap; }
+.check-label {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); cursor: pointer; user-select: none;
+}
+.check-label input[type="checkbox"] {
+  accent-color: var(--terracotta); width: 15px; height: 15px; cursor: pointer;
+}
+
+/* ── Submit / actions row ── */
+.form-actions { display: flex; justify-content: flex-end; padding-top: 8px; }
+
+/* ── Edit view: back button ── */
+.edit-back-row { margin-bottom: 4px; }
+.back-btn {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); transition: color .2s ease;
+}
+.back-btn:hover { color: var(--ink); }
+
+/* ── Success banner ── */
+.admin-success {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 18px; border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--terracotta) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--terracotta) 25%, transparent);
+}
+.success-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--terracotta); flex-shrink: 0; }
+
+/* ── Empty state ── */
+.admin-empty { padding: 60px; text-align: center; color: var(--muted); }
+
+/* ── Inline error ── */
+.form-error {
+  font-family: var(--font-mono); font-size: 12px; color: var(--rust); margin: 0;
+  padding: 10px 14px;
+  background: color-mix(in oklab, var(--rust) 8%, transparent);
+  border-radius: var(--radius-sm); border-left: 2px solid var(--rust);
+}

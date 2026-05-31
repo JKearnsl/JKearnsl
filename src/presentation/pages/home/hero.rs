@@ -11,6 +11,9 @@ use crate::presentation::components::ui::card::Card;
 pub fn Editorial(notes: Resource<Vec<NoteListItem>>) -> impl IntoView {
     view! {
         <Style id="home-hero">{include_str!("./hero.css")}</Style>
+        <Style id="notes-cover">{include_str!("../../components/notes/cover.css")}</Style>
+        <Style id="ui-badge">{include_str!("../../components/ui/badge/badge.css")}</Style>
+        <Style id="ui-card">{include_str!("../../components/ui/card/card.css")}</Style>
         <section class="hero-editorial">
             <Suspense fallback=move || view! { <div class="hero-skeleton"/> }>
                 {move || notes.get().map(|posts| {
