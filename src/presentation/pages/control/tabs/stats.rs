@@ -104,7 +104,7 @@ pub fn Section(
                 }
             })}
         </Suspense>
-    }
+    }.into_any()
 }
 
 #[component]
@@ -114,5 +114,5 @@ fn StatCard(label: &'static str, value: String) -> impl IntoView {
             <div class="stat-card-value">{value}</div>
             <div class="type-eyebrow stat-card-label">{label}</div>
         </div>
-    }
+    }.into_any()
 }

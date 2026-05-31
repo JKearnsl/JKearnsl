@@ -33,7 +33,7 @@ pub fn Section(
                 }.into_any(),
             })}
         </Suspense>
-    }
+    }.into_any()
 }
 
 #[component]
@@ -133,7 +133,7 @@ fn EditForm(
                 </div>
             </form>
         </div>
-    }
+    }.into_any()
 }
 
 #[component]
@@ -195,7 +195,7 @@ pub fn NoteFormFields(
                 "Опубликовать"
             </label>
         </div>
-    }
+    }.into_any()
 }
 
 #[component]
@@ -278,5 +278,5 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
                 }.into_any()
             }}
         </div>
-    }
+    }.into_any()
 }

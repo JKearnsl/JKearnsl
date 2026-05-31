@@ -6,8 +6,10 @@ use crate::presentation::components::notes::{category, format, cover};
 #[component]
 pub fn Section(notes: Resource<Vec<NoteListItem>>) -> impl IntoView {
     view! {
-        <Style id="home-featured">{include_str!("./featured.css")}</Style>
-        <Style id="notes-cover">{include_str!("../../components/notes/cover.css")}</Style>
+        <Style id="home-featured-bundle">{concat!(
+            include_str!("./featured.css"),
+            include_str!("../../components/notes/cover.css")
+        )}</Style>
         <section class="featured-section">
             <div class="wrap">
                 <div class="section-header">
@@ -30,7 +32,7 @@ pub fn Section(notes: Resource<Vec<NoteListItem>>) -> impl IntoView {
                 </Suspense>
             </div>
         </section>
-    }
+    }.into_any()
 }
 
 #[component]

@@ -14,10 +14,12 @@ pub fn Page() -> impl IntoView {
     let note = Resource::new(slug, |s| async move { by_slug(s).await.unwrap_or(None) });
 
     view! {
-        <Style id="notes-note-content">{include_str!("../../components/notes/note_content/note_content.css")}</Style>
-        <Style id="notes-cover">{include_str!("../../components/notes/cover.css")}</Style>
-        <Style id="ui-badge">{include_str!("../../components/ui/badge/badge.css")}</Style>
-        <Style id="ui-chip">{include_str!("../../components/ui/chip/chip.css")}</Style>
+        <Style id="note-page-bundle">{concat!(
+            include_str!("../../components/notes/note_content/note_content.css"),
+            include_str!("../../components/notes/cover.css"),
+            include_str!("../../components/ui/badge/badge.css"),
+            include_str!("../../components/ui/chip/chip.css")
+        )}</Style>
         <main class="page">
             <Suspense fallback=move || view! { <div class="note-loading type-mono">"// загрузка..."</div> }>
                 {move || note.get().map(|opt| match opt {

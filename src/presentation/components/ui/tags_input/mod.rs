@@ -29,11 +29,11 @@ pub fn TagsInput(
         }
     };
 
-    let on_keydown = move |ev: leptos::ev::KeyboardEvent| {
+    let on_keydown = move |_ev: leptos::ev::KeyboardEvent| {
         #[cfg(feature = "hydrate")]
-        match ev.key().as_str() {
+        match _ev.key().as_str() {
             "Enter" | "," => {
-                ev.prevent_default();
+                _ev.prevent_default();
                 add_tag(draft.get_untracked());
             }
             "Backspace" if draft.get_untracked().is_empty() => {

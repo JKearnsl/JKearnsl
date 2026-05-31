@@ -22,11 +22,10 @@ pub fn Page() -> impl IntoView {
     );
 
     view! {
-        <Style id="notes-cover">{include_str!("../../components/notes/cover.css")}</Style>
-        <Style id="ui-card">{include_str!("../../components/ui/card/card.css")}</Style>
-        <Style id="ui-badge">{include_str!("../../components/ui/badge/badge.css")}</Style>
-        <Style id="notes-note-card">{include_str!("../../components/notes/note_card/note_card.css")}</Style>
-        <Style id="home-post-grid">{include_str!("./post.css")}</Style>
+        <Style id="home-post-bundle">{concat!(
+            include_str!("../../components/notes/note_card/note_card.css"),
+            include_str!("./post.css")
+        )}</Style>
         <main class="page">
             <hero::Editorial notes=notes.clone()/>
             <marquee::Section/>

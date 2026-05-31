@@ -63,7 +63,7 @@ pub fn Section() -> impl IntoView {
                 </div>
             </div>
         </section>
-    }
+    }.into_any()
 }
 
 #[component]
@@ -90,5 +90,5 @@ fn HalftoneDecoration(rows: usize, cols: usize, max_r: f64) -> impl IntoView {
                 view! { <circle cx={cx_s} cy={cy_s} r={r_s} fill="currentColor"/> }
             }).collect_view()}
         </svg>
-    }
+    }.into_any()
 }

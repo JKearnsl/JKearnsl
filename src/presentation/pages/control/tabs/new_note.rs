@@ -86,5 +86,5 @@ pub fn Section(
                 </div>
             </form>
         </div>
-    }
+    }.into_any()
 }

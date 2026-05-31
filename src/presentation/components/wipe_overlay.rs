@@ -6,8 +6,9 @@ pub fn WipeOverlay() -> impl IntoView {
     use leptos_router::hooks::use_navigate;
 
     let navigate = use_navigate();
-    let pending: RwSignal<Option<String>> = RwSignal::new(None);
-    // 0 = idle, 1 = wipe-in (covering screen), 2 = wipe-out (revealing new page)
+    #[allow(unused)]
+    let navigate = StoredValue::new(navigate);
+    // 0 = idle, 1 = wipe-in, 2 = wipe-out
     let phase = RwSignal::new(0u8);
 
     Effect::new(move |_| {
@@ -20,15 +21,21 @@ pub fn WipeOverlay() -> impl IntoView {
             let Some(doc) = window.document() else { return };
 
             let closure = Closure::<dyn Fn(web_sys::MouseEvent)>::new(move |e: web_sys::MouseEvent| {
-                if phase.get_untracked() != 0 { return; }
                 let Some(target) = e.target() else { return };
                 let Ok(el) = target.dyn_into::<web_sys::Element>() else { return };
                 let Ok(Some(anchor)) = el.closest("a") else { return };
                 let Some(href) = anchor.get_attribute("href") else { return };
+
                 if href.starts_with('/') && !href.starts_with("//") {
                     e.prevent_default();
-                    pending.set(Some(href));
-                    phase.set(1);
+
+                    // Navigate immediately — don't wait for animation
+                    navigate.with_value(|nav| nav(&href, Default::default()));
+
+                    // Play the overlay animation only if idle
+                    if phase.get_untracked() == 0 {
+                        phase.set(1);
+                    }
                 }
             });
 
@@ -36,8 +43,6 @@ pub fn WipeOverlay() -> impl IntoView {
             closure.forget();
         }
     });
-
-    let navigate = StoredValue::new(navigate);
 
     let wipe_class = move || match phase.get() {
         1 => "wipe in",
@@ -49,20 +54,20 @@ pub fn WipeOverlay() -> impl IntoView {
         <Style id="comp-wipe">{include_str!("./wipe_overlay.css")}</Style>
         <div
             class=wipe_class
-            on:animationend=move |_| {
-                let p = phase.get_untracked();
-                if p == 1 {
-                    if let Some(url) = pending.get_untracked() {
-                        navigate.with_value(|nav| nav(&url, Default::default()));
-                        #[cfg(feature = "hydrate")]
-                        if let Some(w) = web_sys::window() {
-                            let _ = w.scroll_to_with_x_and_y(0.0, 0.0);
+            on:animationend=move |_ev| {
+                #[cfg(feature = "hydrate")]
+                {
+                    use wasm_bindgen::JsCast;
+                    // Only react to animations on this element itself
+                    if let Ok(anim_ev) = _ev.dyn_into::<web_sys::AnimationEvent>() {
+                        let name = anim_ev.animation_name();
+                        let p = phase.get_untracked();
+                        if p == 1 && name == "wipeIn" {
+                            phase.set(2);
+                        } else if p == 2 && name == "wipeOut" {
+                            phase.set(0);
                         }
-                        pending.set(None);
                     }
-                    phase.set(2);
-                } else if p == 2 {
-                    phase.set(0);
                 }
             }
         />

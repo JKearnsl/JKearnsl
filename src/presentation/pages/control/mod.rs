@@ -96,5 +96,5 @@ pub fn Page() -> impl IntoView {
                 </Suspense>
             </div>
         </main>
-    }
+    }.into_any()
 }
