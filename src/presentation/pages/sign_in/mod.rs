@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_meta::{Style, Title};
+use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
 use crate::presentation::api::{session, users};
 use crate::presentation::components::ui::button::Button;
@@ -32,7 +32,6 @@ pub fn Page() -> impl IntoView {
     });
 
     view! {
-        <Style id="page-sign-in">{include_str!("./sign_in.css")}</Style>
         <Title text="Войти"/>
         <main class="page sign-in-page">
             <div class="sign-in-wrap">

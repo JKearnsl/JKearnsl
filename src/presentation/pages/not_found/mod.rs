@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::components::ui::button::Button;
 
 #[component]
@@ -11,7 +10,6 @@ pub fn Page() -> impl IntoView {
     }
 
     view! {
-        <Style id="page-not-found">{include_str!("./not_found.css")}</Style>
         <main class="page not-found-page">
             <div class="wrap">
                 <div class="not-found-inner">

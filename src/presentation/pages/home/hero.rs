@@ -1,7 +1,6 @@
 use leptos::prelude::*;
 use crate::domain::models::note::NoteListItem;
 use crate::presentation::components::notes::{category, format, cover};
-use leptos_meta::Style;
 use crate::presentation::components::ui::badge::Badge;
 use crate::presentation::components::ui::button::{Button, Variant as BtnVariant};
 use crate::presentation::components::ui::chip::{Tag, ChipRow};
@@ -10,12 +9,6 @@ use crate::presentation::components::ui::card::Card;
 #[component]
 pub fn Editorial(notes: Resource<Vec<NoteListItem>>) -> impl IntoView {
     view! {
-        <Style id="home-hero-bundle">{concat!(
-            include_str!("./hero.css"),
-            include_str!("../../components/notes/cover.css"),
-            include_str!("../../components/ui/badge/badge.css"),
-            include_str!("../../components/ui/card/card.css")
-        )}</Style>
         <section class="hero-editorial">
             <Suspense fallback=move || view! { <div class="hero-skeleton"/> }>
                 {move || notes.get().map(|posts| {

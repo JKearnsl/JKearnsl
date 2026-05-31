@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_meta::{provide_meta_context, Link, Meta, Style, Stylesheet, Title};
+use leptos_meta::{provide_meta_context, Link, Meta, Stylesheet, Title};
 use leptos_router::{
     components::{Route, Router, Routes},
     ParamSegment, StaticSegment, WildcardSegment,
@@ -58,13 +58,7 @@ pub fn App() -> impl IntoView {
         <Title formatter=|t| format!("{t} — JKearnsl")/>
         <Meta name="description" content="Заметки о коде, числах и материи"/>
         <Link rel="icon" href="/assets/images/favicon.svg"/>
-        <Stylesheet href="/assets/css/style.css"/>
-        <Style id="shell-bundle">{concat!(
-            include_str!("./components/footer.css"),
-            include_str!("./components/header.css"),
-            include_str!("./components/wipe_overlay.css"),
-        )}</Style>
-
+        <Stylesheet href="/pkg/jkearnsl.css"/>
         <Router>
             <wipe_overlay::WipeOverlay/>
             <header::Header theme/>

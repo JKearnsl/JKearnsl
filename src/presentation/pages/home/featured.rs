@@ -1,15 +1,10 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::domain::models::note::NoteListItem;
 use crate::presentation::components::notes::{category, format, cover};
 
 #[component]
 pub fn Section(notes: Resource<Vec<NoteListItem>>) -> impl IntoView {
     view! {
-        <Style id="home-featured-bundle">{concat!(
-            include_str!("./featured.css"),
-            include_str!("../../components/notes/cover.css")
-        )}</Style>
         <section class="featured-section">
             <div class="wrap">
                 <div class="section-header">

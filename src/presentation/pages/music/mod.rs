@@ -4,7 +4,6 @@ mod list;
 mod track;
 
 use leptos::prelude::*;
-use leptos_meta::Style;
 
 pub struct Track {
     pub no: &'static str,
@@ -37,7 +36,6 @@ pub fn Page() -> impl IntoView {
     Effect::new(move |_| { let _ = idx.get(); cur.set(0); });
 
     view! {
-        <Style id="page-music">{include_str!("./music.css")}</Style>
         <main class="page">
             <hero::Section/>
             <player::Section idx playing cur/>

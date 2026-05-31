@@ -1,7 +1,7 @@
 mod tabs;
 
 use leptos::prelude::*;
-use leptos_meta::{Style, Title};
+use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
 use crate::presentation::api;
 
@@ -31,8 +31,6 @@ pub fn Page() -> impl IntoView {
     });
 
     view! {
-        <Style id="page-control">{include_str!("./control.css")}</Style>
-        <Style id="ui-card">{include_str!("../../components/ui/card/card.css")}</Style>
         <Title text="Панель управления"/>
         <main class="page admin-page">
             <div class="wrap">

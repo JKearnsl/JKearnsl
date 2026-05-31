@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::domain::models::note::NoteListItem;
 use crate::presentation::components::notes::{category, format, cover};
 
@@ -14,8 +13,6 @@ pub fn NoteCard(post: NoteListItem) -> impl IntoView {
     let category = post.category.clone();
 
     view! {
-        <Style id="ui-card">{include_str!("../../ui/card/card.css")}</Style>
-        <Style id="notes-note-card">{include_str!("./note_card.css")}</Style>
         <article class="card note-card">
             <a href={href} class="note-card-inner card-surface">
                 <div class="note-card-cover">

@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::components::ui::button::{Button, Variant as BtnVariant};
 
 #[component]
@@ -13,7 +12,6 @@ pub fn Page() -> impl IntoView {
     ];
 
     view! {
-        <Style id="page-about">{include_str!("./about.css")}</Style>
         <main class="page">
             <section class="about-hero-section">
                 <div class="wrap">

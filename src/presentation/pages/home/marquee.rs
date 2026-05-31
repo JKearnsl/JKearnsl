@@ -1,6 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
-
 
 #[component]
 pub fn Section() -> impl IntoView {
@@ -12,7 +10,6 @@ pub fn Section() -> impl IntoView {
     let seq: Vec<_> = items.iter().chain(items.iter()).enumerate().collect();
 
     view! {
-        <Style id="home-marquee">{include_str!("./marquee.css")}</Style>
         <section class="marquee-section">
             <div class="marquee">
                 {seq.into_iter().map(|(i, t)| {

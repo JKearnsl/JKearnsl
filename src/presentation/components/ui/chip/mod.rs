@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 
 #[component]
 pub fn Chip(
@@ -8,7 +7,6 @@ pub fn Chip(
     children: Children,
 ) -> impl IntoView {
     view! {
-        <Style id="ui-chip">{include_str!("./chip.css")}</Style>
         <button
             class="chip"
             class:chip-active=active
@@ -23,7 +21,6 @@ pub fn Chip(
 #[component]
 pub fn Tag(children: Children) -> impl IntoView {
     view! {
-        <Style id="ui-chip">{include_str!("./chip.css")}</Style>
         <span class="chip">{children()}</span>
     }
 }
@@ -40,7 +37,6 @@ pub fn ChipRow(
         format!("chip-row {}", class)
     };
     view! {
-        <Style id="ui-chip">{include_str!("./chip.css")}</Style>
         <div class=full_class>{children()}</div>
     }
 }

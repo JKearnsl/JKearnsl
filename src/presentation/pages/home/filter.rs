@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::components::notes::category;
 use crate::presentation::components::ui::chip::{Chip, ChipRow};
 
@@ -14,7 +13,6 @@ pub fn Bar(filter: RwSignal<String>) -> impl IntoView {
     ];
 
     view! {
-        <Style id="home-filter">{include_str!("./filter.css")}</Style>
         <section class="filter-section">
             <div class="wrap">
                 <div class="section-header">

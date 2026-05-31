@@ -1,11 +1,9 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::domain::models::note::Category;
 
 #[component]
 pub fn Art(category: Category) -> impl IntoView {
     view! {
-        <Style id="notes-cover">{include_str!("./cover.css")}</Style>
         {match category {
             Category::Math => view! { <Math/> }.into_any(),
             Category::Science => view! { <Science/> }.into_any(),

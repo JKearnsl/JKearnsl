@@ -105,3 +105,4 @@ bin-default-features = false
 lib-features = ["hydrate"]
 lib-default-features = false
 lib-profile-release = "wasm-release"
+tailwind-input-file = "assets/css/tailwind.css"

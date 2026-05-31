@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::components::ui::chip::{Chip, ChipRow};
 
 struct GalCat {
@@ -20,7 +19,6 @@ pub fn Page() -> impl IntoView {
     let cat = RwSignal::new("anime");
 
     view! {
-        <Style id="page-gallery">{include_str!("./gallery.css")}</Style>
         <main class="page">
             <section class="gallery-hero">
                 <div class="wrap">

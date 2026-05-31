@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::components::ui::button::Button;
 use crate::presentation::components::ui::input::Input;
 
@@ -16,7 +15,6 @@ pub fn Section() -> impl IntoView {
     };
 
     view! {
-        <Style id="home-newsletter">{include_str!("./news_letter.css")}</Style>
         <section class="newsletter-section">
             <div class="wrap">
                 <div class="newsletter-box">

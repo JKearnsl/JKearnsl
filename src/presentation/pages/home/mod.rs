@@ -6,7 +6,6 @@ mod news_letter;
 mod post;
 
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::api;
 
 #[component]
@@ -22,10 +21,6 @@ pub fn Page() -> impl IntoView {
     );
 
     view! {
-        <Style id="home-post-bundle">{concat!(
-            include_str!("../../components/notes/note_card/note_card.css"),
-            include_str!("./post.css")
-        )}</Style>
         <main class="page">
             <hero::Editorial notes=notes.clone()/>
             <marquee::Section/>

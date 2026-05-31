@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 
 #[derive(Clone, Copy, PartialEq, Default)]
 pub enum Variant {
@@ -39,7 +38,6 @@ pub fn Button(
 
     if let Some(href) = href {
         view! {
-            <Style id="ui-button">{include_str!("./button.css")}</Style>
             <a href=href target=target class=full_class>
                 {children()}
             </a>
@@ -48,7 +46,6 @@ pub fn Button(
     } else {
         let btn_type = if submit { "submit" } else { "button" };
         view! {
-            <Style id="ui-button">{include_str!("./button.css")}</Style>
             <button
                 type=btn_type
                 class=full_class

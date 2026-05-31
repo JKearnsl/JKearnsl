@@ -1,8 +1,0 @@
-.not-found-page  { min-height: 70vh; display: flex; align-items: center; }
-.not-found-inner { padding: 80px 0; display: flex; flex-direction: column; gap: 24px; }
-.not-found-title {
-  font-size: clamp(100px,20vw,200px); letter-spacing: -.05em; line-height: .85;
-  color: var(--ink); margin: 0; font-family: var(--font-display); font-weight: 700;
-}
-.not-found-title span { color: var(--terracotta); }
-.not-found-msg { font-size: 20px; color: var(--ink-2); max-width: 480px; margin: 0; }

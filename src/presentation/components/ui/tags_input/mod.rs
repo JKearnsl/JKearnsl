@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 
 #[component]
 pub fn TagsInput(
@@ -44,7 +43,6 @@ pub fn TagsInput(
     };
 
     view! {
-        <Style id="ui-tags-input">{include_str!("./tags_input.css")}</Style>
         <div class="tags-input">
             <For
                 each=move || value.get()

@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::Style;
 use crate::presentation::components::notes::{category, read_time, format, cover};
 use crate::presentation::components::ui::badge::Badge;
 use crate::presentation::components::ui::chip::{Chip, Tag, ChipRow};
@@ -44,8 +43,6 @@ pub fn NoteContent(post: crate::domain::models::note::Note) -> impl IntoView {
     let category_for_cover = post.category.clone();
 
     view! {
-        <Style id="notes-note-content">{include_str!("./note_content.css")}</Style>
-
         // progress bar
         <div
             class="progress-bar"
