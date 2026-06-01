@@ -49,22 +49,22 @@ pub fn NoteContent(post: crate::domain::models::note::Note) -> impl IntoView {
             style=move || format!("width:{}%", progress.get() * 100.0)
         />
 
-        <article class="note-wrap">
-            <div class="wrap note-inner">
-                <a href="/" class="breadcrumb type-mono">"← / архив / "{cat_lbl}</a>
+        <article class="pt-[56px]">
+            <div class="wrap max-w-[1080px]!">
+                <a href="/" class="text-muted mb-12 inline-flex items-center gap-2 type-mono">"← / архив / "{cat_lbl}</a>
 
-                <div class="note-meta-row">
+                <div class="flex gap-5 flex-wrap items-center mb-7">
                     <Badge color=cat_clr>{cat_lbl}</Badge>
                     <span class="type-mono muted">"№"{no_fmt}</span>
                     <span class="type-mono muted">{date}</span>
                     <span class="type-mono muted">{rt}</span>
                 </div>
 
-                <h1 class="h-display note-title">{title}</h1>
-                <p class="note-lead">{description}</p>
+                <h1 class="h-display max-w-[980px] text-balance">{title}</h1>
+                <p class="text-[22px] text-ink-2 max-w-[780px] mt-6 leading-[1.45]">{description}</p>
 
-                <div class="author-row" style="margin-top:36px">
-                    <div class="author-avatar">"JK"</div>
+                <div class="flex items-center gap-[13px]" style="margin-top:36px">
+                    <div class="size-[42px] rounded-full bg-terracotta flex items-center justify-center text-cream font-mono font-bold text-[14px] shrink-0">"JK"</div>
                     <div>
                         <div class="type-mono-lg">"JKearnsl"</div>
                         <div class="type-mono muted">"автор · программист · вечный студент"</div>
@@ -72,17 +72,17 @@ pub fn NoteContent(post: crate::domain::models::note::Note) -> impl IntoView {
                 </div>
             </div>
 
-            <div class="wrap note-cover-wrap">
-                <div class="note-cover">
+            <div class="wrap max-w-[1280px]! mt-12!">
+                <div class="relative aspect-[16/8] rounded-[28px] overflow-hidden border border-[var(--line)]">
                     <cover::Art category=category_for_cover/>
                 </div>
             </div>
 
-            <div class="wrap note-body-wrap">
-                <div class="note-body-grid">
+            <div class="wrap max-w-[1080px]! mt-16! pb-[80px]">
+                <div class="grid grid-cols-[1fr_220px] gap-[64px] max-[900px]:grid-cols-1">
                     <div class="prose" inner_html=body_html/>
-                    <aside class="note-sidebar">
-                        <div class="sidebar-block">
+                    <aside class="sticky top-[120px] self-start flex flex-col gap-6 max-[900px]:static">
+                        <div class="flex flex-col gap-[10px]">
                             <div class="type-eyebrow">"// share"</div>
                             <ChipRow>
                                 <Chip active=|| false on_click=|_| {}>"copy link"</Chip>
@@ -90,7 +90,7 @@ pub fn NoteContent(post: crate::domain::models::note::Note) -> impl IntoView {
                                 <Chip active=|| false on_click=|_| {}>"rss"</Chip>
                             </ChipRow>
                         </div>
-                        <div class="sidebar-block">
+                        <div class="flex flex-col gap-[10px]">
                             <div class="type-eyebrow">"// теги"</div>
                             <ChipRow>
                                 {tags.into_iter().map(|t| view! {

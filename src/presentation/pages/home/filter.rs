@@ -13,12 +13,12 @@ pub fn Bar(filter: RwSignal<String>) -> impl IntoView {
     ];
 
     view! {
-        <section class="filter-section">
+        <section class="pt-[56px] pb-6">
             <div class="wrap">
-                <div class="section-header">
+                <div class="flex justify-between items-end gap-5 flex-wrap">
                     <div>
                         <div class="type-eyebrow">"// archive"</div>
-                        <h2 class="h-section">"весь архив"</h2>
+                        <h2 class="h-section mt-2">"весь архив"</h2>
                     </div>
                     <ChipRow>
                         {categories.into_iter().map(|(id, label)| {
@@ -30,7 +30,7 @@ pub fn Bar(filter: RwSignal<String>) -> impl IntoView {
                                     active=move || filter.get() == id_str
                                     on_click=move |_| filter.set(id_str2.clone())
                                 >
-                                    <span class="chip-dot" style=format!("background:{}", color)/>
+                                    <span class="inline-block size-[6px] rounded-full" style=format!("background:{}", color)/>
                                     {label}
                                 </Chip>
                             }

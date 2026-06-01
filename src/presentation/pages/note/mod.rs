@@ -14,10 +14,10 @@ pub fn Page() -> impl IntoView {
 
     view! {
         <main class="page">
-            <Suspense fallback=move || view! { <div class="note-loading type-mono">"// загрузка..."</div> }>
+            <Suspense fallback=move || view! { <div class="p-[120px] text-center text-muted type-mono">"// загрузка..."</div> }>
                 {move || note.get().map(|opt| match opt {
                     Some(post) => view! { <content::NoteContent post/> }.into_any(),
-                    None => view! { <div class="note-not-found type-mono">"// запись не найдена"</div> }.into_any(),
+                    None => view! { <div class="p-[120px] text-center text-muted type-mono">"// запись не найдена"</div> }.into_any(),
                 })}
             </Suspense>
         </main>

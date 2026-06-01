@@ -5,12 +5,12 @@ use crate::presentation::components::notes::note_card::NoteCard;
 #[component]
 pub fn Grid(posts: Vec<NoteListItem>) -> impl IntoView {
     view! {
-        <section class="posts-section">
+        <section class="pt-2 pb-[56px]">
             <div class="wrap">
-                <div class="posts-grid">
+                <div class="grid grid-cols-3 gap-[28px_24px] max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
                     {if posts.is_empty() {
                         view! {
-                            <div class="posts-empty type-mono">"// в этой категории пока пусто"</div>
+                            <div class="col-span-full p-12 text-center text-muted type-mono">"// в этой категории пока пусто"</div>
                         }.into_any()
                     } else {
                         posts.into_iter().map(|post| view! {

@@ -33,33 +33,33 @@ pub fn Page() -> impl IntoView {
 
     view! {
         <Title text="Войти"/>
-        <main class="page sign-in-page">
-            <div class="sign-in-wrap">
+        <main class="page min-h-[calc(100vh-72px)] flex items-center justify-center px-6 py-[60px]">
+            <div class="w-full max-w-[460px]">
                 <div class="sign-in-card">
                     <div class="sign-in-card-deco"/>
-                    <div class="type-eyebrow sign-in-eyebrow">
-                        <span class="eyebrow-line"/>
+                    <div class="type-eyebrow mb-5 flex items-center gap-3">
+                        <span class="eyebrow-line text-terracotta w-[28px]"/>
                         "// /sign-in"
                     </div>
                     <Suspense fallback=move || view! {
-                        <h1 class="h-card sign-in-title">"Вход"</h1>
+                        <h1 class="h-card mb-2">"Вход"</h1>
                     }>
                         {move || current_user.get().map(|user| match user {
                             Ok(Some(username)) => view! {
-                                <h1 class="h-card sign-in-title">
+                                <h1 class="h-card mb-2">
                                     "Привет, " {username.clone()} "."
                                 </h1>
-                                <p class="sign-in-hint">"Вы уже вошли в систему."</p>
-                                <div class="sign-in-form">
+                                <p class="font-mono text-[12px] text-muted mb-8 leading-[1.6]">"Вы уже вошли в систему."</p>
+                                <div class="flex flex-col gap-[18px]">
                                     <ActionForm action=logout_action>
                                         <Button submit=true>"Выйти →"</Button>
                                     </ActionForm>
                                 </div>
                             }.into_any(),
                             _ => view! {
-                                <h1 class="h-card sign-in-title">"Вход"</h1>
-                                <p class="sign-in-hint">"Введите данные для доступа к панели управления."</p>
-                                <div class="sign-in-form">
+                                <h1 class="h-card mb-2">"Вход"</h1>
+                                <p class="font-mono text-[12px] text-muted mb-8 leading-[1.6]">"Введите данные для доступа к панели управления."</p>
+                                <div class="flex flex-col gap-[18px]">
                                     <ActionForm action=login_action>
                                         <FormField label="Имя пользователя" label_for="username">
                                             <input
@@ -83,11 +83,11 @@ pub fn Page() -> impl IntoView {
                                         </FormField>
                                         {move || login_result.get().map(|r| match r {
                                             Err(e) => view! {
-                                                <p class="sign-in-error">{e.to_string()}</p>
+                                                <p class="font-mono text-[12px] text-rust py-[10px] px-[14px] bg-rust/8 rounded-[var(--radius-sm)] border-l-2 border-rust">{e.to_string()}</p>
                                             }.into_any(),
                                             Ok(()) => view! { <span/> }.into_any(),
                                         })}
-                                        <Button submit=true class="sign-in-btn" pending=pending>
+                                        <Button submit=true class="w-full justify-center mt-1 py-[16px] px-[22px]" pending=pending>
                                             {move || if pending.get() { "Загрузка..." } else { "Войти →" }}
                                         </Button>
                                     </ActionForm>

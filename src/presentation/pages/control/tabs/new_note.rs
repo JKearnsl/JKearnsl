@@ -52,20 +52,20 @@ pub fn Section(
     };
 
     view! {
-        <div class="new-post-wrap">
+        <div class="flex flex-col gap-6 max-w-[860px]">
             {move || success.get().map(|slug| {
                 let href = format!("/posts/{}", slug);
                 view! {
-                    <div class="admin-success">
-                        <span class="success-dot"/>
+                    <div class="flex items-center gap-3 py-[13px] px-[18px] rounded-[var(--radius-sm)] bg-terracotta/10 border border-terracotta/25">
+                        <span class="size-2 rounded-full bg-terracotta shrink-0"/>
                         <span class="type-mono-lg">"// публикация создана · "
-                            <a href=href class="footer-hash-link">"открыть →"</a>
+                            <a href=href class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"открыть →"</a>
                         </span>
                     </div>
                 }
             })}
 
-            <form class="new-post-form" on:submit=on_submit>
+            <form class="flex flex-col gap-5" on:submit=on_submit>
                 <NoteFormFields
                     title=title description=description body=body
                     category=category tags=tags
@@ -74,12 +74,12 @@ pub fn Section(
 
                 {move || result.get().map(|r| match r {
                     Err(e) => view! {
-                        <p class="form-error">{e.to_string()}</p>
+                        <p class="font-mono text-[12px] text-rust py-[10px] px-[14px] bg-rust/8 rounded-[var(--radius-sm)] border-l-2 border-rust">{e.to_string()}</p>
                     }.into_any(),
                     Ok(_) => view! { <span/> }.into_any(),
                 })}
 
-                <div class="form-actions">
+                <div class="flex justify-end pt-2">
                     <Button submit=true pending=pending>
                         {move || if pending.get() { "Создание..." } else { "Создать публикацию →" }}
                     </Button>

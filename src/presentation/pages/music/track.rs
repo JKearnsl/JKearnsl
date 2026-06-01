@@ -3,9 +3,9 @@ use leptos::prelude::*;
 #[component]
 pub fn Art(color: &'static str, kind: &'static str, playing: bool) -> AnyView {
     view! {
-        <div class="track-art" style=format!("background:{}", color)>
+        <div class="absolute inset-0 overflow-hidden" style=format!("background:{}", color)>
             <span class="track-kind type-mono">"// "{kind}</span>
-            <div class="wave-bars">
+            <div class="absolute left-0 right-0 bottom-0 h-[44%] flex items-end gap-[2px] px-[14px] pb-[14px]">
                 {(0..24usize).map(|i| {
                     let h = (0.35 + ((i * 7 + i * i) % 65) as f64 / 100.0) * 100.0;
                     let style = if playing {
@@ -14,7 +14,7 @@ pub fn Art(color: &'static str, kind: &'static str, playing: bool) -> AnyView {
                     } else {
                         format!("height:{h:.0}%")
                     };
-                    view! { <span class="wave-bar" style=style/> }.into_any()
+                    view! { <span class="flex-1 bg-cream opacity-65 rounded-[1px] origin-bottom" style=style/> }.into_any()
                 }).collect::<Vec<_>>()}
             </div>
         </div>

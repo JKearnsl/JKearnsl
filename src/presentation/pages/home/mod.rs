@@ -26,7 +26,7 @@ pub fn Page() -> impl IntoView {
             <marquee::Section/>
             <featured::Section notes=notes.clone()/>
             <filter::Bar filter=filter/>
-            <Suspense fallback=move || view! { <div class="loading-posts">"// загрузка..."</div> }>
+            <Suspense fallback=move || view! { <div class="p-12 text-center text-muted type-mono">"// загрузка..."</div> }>
                 {move || notes.get().map(|posts| view! { <post::Grid posts/> })}
             </Suspense>
             <news_letter::Section/>

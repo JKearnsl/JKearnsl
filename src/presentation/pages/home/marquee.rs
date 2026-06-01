@@ -10,18 +10,18 @@ pub fn Section() -> impl IntoView {
     let seq: Vec<_> = items.iter().chain(items.iter()).enumerate().collect();
 
     view! {
-        <section class="marquee-section">
+        <section class="border-t border-b border-[var(--line)] py-6 mt-8 overflow-hidden bg-cream-2">
             <div class="marquee">
                 {seq.into_iter().map(|(i, t)| {
                     let color_cls = match i % 3 {
-                        0 => "mc1",
-                        1 => "mc2",
-                        _ => "mc3",
+                        0 => "text-terracotta",
+                        1 => "text-ochre",
+                        _ => "text-ink",
                     };
                     view! {
-                        <span class="marquee-item">
+                        <span class="inline-flex items-center gap-6">
                             <span class={color_cls}>{*t}</span>
-                            <span class="marquee-dot"/>
+                            <span class="inline-block size-[14px] rounded-full bg-ink"/>
                         </span>
                     }
                 }).collect_view()}

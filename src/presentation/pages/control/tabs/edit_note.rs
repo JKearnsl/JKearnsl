@@ -22,11 +22,11 @@ pub fn Section(
 
     view! {
         <Suspense fallback=move || view! {
-            <div class="admin-loading type-mono">"// загрузка записи..."</div>
+            <div class="p-20 text-center text-muted type-mono">"// загрузка записи..."</div>
         }>
             {move || note_res.get().map(|maybe_note| match maybe_note {
                 None => view! {
-                    <div class="admin-empty type-mono">"// запись не найдена"</div>
+                    <div class="p-[60px] text-center text-muted type-mono">"// запись не найдена"</div>
                 }.into_any(),
                 Some(note) => view! {
                     <EditForm note=note notes=notes.clone() view=view/>
@@ -90,10 +90,10 @@ fn EditForm(
     };
 
     view! {
-        <div class="new-post-wrap">
-            <div class="edit-back-row">
+        <div class="flex flex-col gap-6 max-w-[860px]">
+            <div class="mb-1">
                 <button
-                    class="back-btn type-mono"
+                    class="font-mono text-[12px] tracking-[.06em] uppercase text-muted transition-colors hover:text-ink type-mono"
                     on:click=move |_| view.set(AdminView::Overview)
                 >
                     "← назад к списку"
@@ -103,16 +103,16 @@ fn EditForm(
             {move || success.get().map(|slug| {
                 let href = format!("/posts/{}", slug);
                 view! {
-                    <div class="admin-success">
-                        <span class="success-dot"/>
+                    <div class="flex items-center gap-3 py-[13px] px-[18px] rounded-[var(--radius-sm)] bg-terracotta/10 border border-terracotta/25">
+                        <span class="size-2 rounded-full bg-terracotta shrink-0"/>
                         <span class="type-mono-lg">"// сохранено · "
-                            <a href=href class="footer-hash-link">"открыть →"</a>
+                            <a href=href class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"открыть →"</a>
                         </span>
                     </div>
                 }
             })}
 
-            <form class="new-post-form" on:submit=on_submit>
+            <form class="flex flex-col gap-5" on:submit=on_submit>
                 <NoteFormFields
                     title=title description=description body=body
                     category=category tags=tags
@@ -121,12 +121,12 @@ fn EditForm(
 
                 {move || result.get().map(|r| match r {
                     Err(e) => view! {
-                        <p class="form-error">{e.to_string()}</p>
+                        <p class="font-mono text-[12px] text-rust py-[10px] px-[14px] bg-rust/8 rounded-[var(--radius-sm)] border-l-2 border-rust">{e.to_string()}</p>
                     }.into_any(),
                     Ok(_) => view! { <span/> }.into_any(),
                 })}
 
-                <div class="form-actions">
+                <div class="flex justify-end pt-2">
                     <Button submit=true pending=pending>
                         {move || if pending.get() { "Сохранение..." } else { "Сохранить изменения →" }}
                     </Button>
@@ -177,8 +177,8 @@ pub fn NoteFormFields(
             <TagsInput value=tags placeholder="rust, async, tokio"/>
         </FormField>
 
-        <div class="form-checks">
-            <label class="check-label">
+        <div class="flex gap-7 flex-wrap">
+            <label class="flex items-center gap-[9px] font-mono text-[12px] tracking-[.06em] uppercase text-muted cursor-pointer select-none">
                 <input
                     type="checkbox"
                     prop:checked=move || featured.get()
@@ -186,7 +186,7 @@ pub fn NoteFormFields(
                 />
                 "Отметить как особую"
             </label>
-            <label class="check-label">
+            <label class="flex items-center gap-[9px] font-mono text-[12px] tracking-[.06em] uppercase text-muted cursor-pointer select-none">
                 <input
                     type="checkbox"
                     prop:checked=move || publish.get()
@@ -219,22 +219,24 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
     };
 
     view! {
-        <div class="form-field body-editor">
-            <div class="editor-header">
-                <span class="editor-label">"Тело публикации"</span>
-                <div class="editor-tabs">
+        <div class="form-field gap-0!">
+            <div class="flex items-center justify-between py-[10px] px-[14px] bg-cream-2 border border-[var(--line)] rounded-t-[var(--radius-sm)]">
+                <span class="font-mono text-[11px] tracking-[.14em] uppercase text-muted">"Тело публикации"</span>
+                <div class="flex gap-1">
                     <button
                         type="button"
-                        class="editor-tab"
-                        class:editor-tab-active=move || !preview_mode.get()
+                        class="font-mono text-[11px] tracking-[.06em] uppercase py-[5px] px-3 rounded-[6px] text-muted transition-colors hover:text-ink"
+                        class:bg-ink=move || !preview_mode.get()
+                        class:text-cream=move || !preview_mode.get()
                         on:click=switch_to_write
                     >
                         "✏ Писать"
                     </button>
                     <button
                         type="button"
-                        class="editor-tab"
-                        class:editor-tab-active=move || preview_mode.get()
+                        class="font-mono text-[11px] tracking-[.06em] uppercase py-[5px] px-3 rounded-[6px] text-muted transition-colors hover:text-ink"
+                        class:bg-ink=move || preview_mode.get()
+                        class:text-cream=move || preview_mode.get()
                         on:click=switch_to_preview
                     >
                         "◉ Превью"
@@ -244,7 +246,7 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
 
             {move || if preview_mode.get() {
                 view! {
-                    <div class="editor-preview-pane prose">
+                    <div class="min-h-[360px] py-5 px-6 bg-paper border border-[var(--line)] border-t-0 rounded-b-[var(--radius-sm)] prose">
                         {move || if preview_pending.get() {
                             view! {
                                 <span class="type-mono muted">"// рендеринг..."</span>
@@ -270,7 +272,7 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
             } else {
                 view! {
                     <textarea
-                        class="body-textarea"
+                        class="w-full min-h-[360px] resize-y bg-paper border border-[var(--line)] border-t-0 rounded-b-[var(--radius-sm)] py-4 px-[18px] font-mono text-[14px] leading-[1.65] text-ink outline-none transition-colors focus:border-terracotta placeholder:text-muted placeholder:opacity-45"
                         placeholder="# Заголовок\n\nТекст публикации в Markdown..."
                         prop:value=move || body.get()
                         on:input=move |ev| body.set(event_target_value(&ev))

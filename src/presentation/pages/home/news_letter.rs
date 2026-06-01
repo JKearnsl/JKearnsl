@@ -15,44 +15,44 @@ pub fn Section() -> impl IntoView {
     };
 
     view! {
-        <section class="newsletter-section">
+        <section class="py-[80px]">
             <div class="wrap">
-                <div class="newsletter-box">
+                <div class="bg-ink text-cream rounded-[28px] p-[56px] grid grid-cols-[1.2fr_1fr] gap-[40px] items-center relative overflow-hidden max-[760px]:grid-cols-1 max-[760px]:p-[36px_28px]">
                     <div class="nl-deco nl-deco-tr" style="color:var(--terracotta)">
                         <HalftoneDecoration rows=20 cols=20 max_r=4.0/>
                     </div>
                     <div class="nl-deco nl-deco-bl" style="color:var(--ochre)">
                         <HalftoneDecoration rows=18 cols=18 max_r=3.4/>
                     </div>
-                    <div class="newsletter-left">
+                    <div class="relative">
                         <div class="type-eyebrow" style="color:var(--ochre)">"// newsletter"</div>
-                        <h2 class="h-section newsletter-title">"один пост — одно письмо"</h2>
-                        <p class="newsletter-desc">
+                        <h2 class="h-section mt-3 text-cream">"один пост — одно письмо"</h2>
+                        <p class="text-cream/70 max-w-[380px] mt-[18px] text-[16px]">
                             "Без расписания. Без маркетинга. Просто я отправляю письмо, \
                              когда выходит новый пост — иногда раз в неделю, иногда раз в месяц."
                         </p>
                     </div>
-                    <div class="newsletter-right">
+                    <div class="relative">
                         {move || if sent.get() {
                             view! {
-                                <div class="newsletter-sent">
-                                    <span class="sent-dot"/>
+                                <div class="py-[22px] px-[22px] border border-ochre rounded-[18px] flex items-center gap-[14px]">
+                                    <span class="inline-block size-3 rounded-full bg-ochre"/>
                                     <span class="type-mono-lg">"// готово. ждите первое письмо."</span>
                                 </div>
                             }.into_any()
                         } else {
                             view! {
-                                <form class="newsletter-form" on:submit=submit>
+                                <form class="flex bg-cream text-ink p-[6px] rounded-full" on:submit=submit>
                                     <Input
                                         value=email
                                         r#type="email"
                                         placeholder="ваш@email"
-                                        class="newsletter-input"
+                                        class="flex-1 border-none bg-transparent outline-none py-[14px] px-[22px] font-mono text-[13px] text-ink"
                                         required=true
                                     />
                                     <Button submit=true>"подписаться"</Button>
                                 </form>
-                                <div class="nl-stats">
+                                <div class="flex gap-[18px] mt-[18px] font-mono text-[11px] text-cream/50">
                                     <span>"~1 письмо / нед"</span>
                                 </div>
                             }.into_any()

@@ -32,40 +32,46 @@ pub fn Page() -> impl IntoView {
 
     view! {
         <Title text="Панель управления"/>
-        <main class="page admin-page">
+        <main class="page pt-[56px] pb-[96px]">
             <div class="wrap">
                 <Suspense>
                     {move || current_user.get().map(|user| match user {
                         Ok(Some(username)) => view! {
-                            <div class="admin-header">
-                                <div class="type-eyebrow admin-eyebrow">
-                                    <span class="eyebrow-line"/>
+                            <div class="pb-8 border-b border-[var(--line)]">
+                                <div class="type-eyebrow flex items-center gap-3 mb-[18px]">
+                                    <span class="w-8 h-px bg-terracotta shrink-0"/>
                                     "// /control"
                                 </div>
-                                <div class="admin-title-row">
+                                <div class="flex items-baseline justify-between gap-4 flex-wrap">
                                     <h1 class="h-section">"Панель управления"</h1>
-                                    <span class="admin-user type-mono">"@"{username}</span>
+                                    <span class="py-[6px] px-[14px] rounded-full bg-terracotta/10 text-terracotta border border-terracotta/25 type-mono">"@"{username}</span>
                                 </div>
                             </div>
 
-                            <div class="admin-tabs">
+                            <div class="flex mt-9 border-b border-[var(--line)]">
                                 <button
-                                    class="admin-tab"
-                                    class:admin-tab-active=move || view.get() == AdminView::Overview
+                                    class="py-[14px] px-7 font-mono text-[12px] tracking-[.08em] uppercase border-b-2 -mb-px transition-colors duration-200 hover:text-ink"
+                                    class:text-muted=move || view.get() != AdminView::Overview
+                                    class:text-ink=move || view.get() == AdminView::Overview
+                                    class:border-transparent=move || view.get() != AdminView::Overview
+                                    class:border-terracotta=move || view.get() == AdminView::Overview
                                     on:click=move |_| view.set(AdminView::Overview)
                                 >
                                     "Обзор"
                                 </button>
                                 <button
-                                    class="admin-tab"
-                                    class:admin-tab-active=move || view.get() == AdminView::NewPost
+                                    class="py-[14px] px-7 font-mono text-[12px] tracking-[.08em] uppercase border-b-2 -mb-px transition-colors duration-200 hover:text-ink"
+                                    class:text-muted=move || view.get() != AdminView::NewPost
+                                    class:text-ink=move || view.get() == AdminView::NewPost
+                                    class:border-transparent=move || view.get() != AdminView::NewPost
+                                    class:border-terracotta=move || view.get() == AdminView::NewPost
                                     on:click=move |_| view.set(AdminView::NewPost)
                                 >
                                     "Новая публикация"
                                 </button>
                                 {move || match view.get() {
                                     AdminView::EditPost(_) => view! {
-                                        <button class="admin-tab admin-tab-active">
+                                        <button class="py-[14px] px-7 font-mono text-[12px] tracking-[.08em] uppercase text-ink border-b-2 border-terracotta -mb-px">
                                             "Редактирование"
                                         </button>
                                     }.into_any(),
@@ -73,7 +79,7 @@ pub fn Page() -> impl IntoView {
                                 }}
                             </div>
 
-                            <div class="admin-content">
+                            <div class="pt-12">
                                 {move || match view.get() {
                                     AdminView::Overview => view! {
                                         <tabs::stats::Section notes=notes.clone() view=view/>
@@ -88,7 +94,7 @@ pub fn Page() -> impl IntoView {
                             </div>
                         }.into_any(),
                         _ => view! {
-                            <div class="admin-loading type-mono">"// проверка авторизации..."</div>
+                            <div class="p-20 text-center text-muted type-mono">"// проверка авторизации..."</div>
                         }.into_any(),
                     })}
                 </Suspense>

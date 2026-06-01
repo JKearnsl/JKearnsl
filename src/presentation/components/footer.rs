@@ -12,14 +12,14 @@ pub fn Footer() -> impl IntoView {
     let current_user = Resource::new(|| (), |_| get_self());
 
     view! {
-        <footer class="site-footer">
+        <footer class="border-t border-[var(--line)] bg-cream-2 pt-[72px] pb-[28px]">
             <div class="wrap">
-                <div class="footer-grid">
-                    <div class="footer-wordmark">
+                <div class="grid grid-cols-[1fr_auto] gap-[48px] items-end max-[900px]:grid-cols-1">
+                    <div class="font-display font-bold text-[clamp(80px,14vw,220px)] tracking-[-0.05em] leading-[.85] text-ink">
                         "jkearnsl"
-                        <span class="footer-dot">"."</span>
+                        <span class="text-terracotta">"."</span>
                     </div>
-                    <div class="footer-cols">
+                    <div class="grid grid-cols-3 gap-[36px] max-[900px]:grid-cols-2">
                         <Col title="// архив" items=vec![
                             ("программирование", "/"),
                             ("математика", "/"),
@@ -37,28 +37,28 @@ pub fn Footer() -> impl IntoView {
                         ]/>
                     </div>
                 </div>
-                <div class="footer-meta">
+                <div class="mt-[32px] pt-[20px] border-t border-[var(--line)] flex justify-between items-center gap-6 flex-wrap font-mono text-[11px] text-muted">
                     <span>"© 2026 jkearnsl · cc-by 4.0 · сделано с помощью Rust + Leptos"</span>
-                    <span class="footer-build">
+                    <span class="inline-flex items-center gap-[2px]">
                         "v " {version} " / build " {build_date} " · "
                         <a
                             href=commit_url
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="footer-hash-link"
+                            class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre"
                         >
                             {git_hash}
                         </a>
                         " · "
                         <Suspense fallback=move || view! {
-                            <a href="/sign-in" class="footer-hash-link">"войти"</a>
+                            <a href="/sign-in" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"войти"</a>
                         }>
                             {move || current_user.get().map(|user| match user {
                                 Ok(Some(username)) => view! {
-                                    <a href="/control" class="footer-hash-link">{username}</a>
+                                    <a href="/control" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">{username}</a>
                                 }.into_any(),
                                 _ => view! {
-                                    <a href="/sign-in" class="footer-hash-link">"войти"</a>
+                                    <a href="/sign-in" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"войти"</a>
                                 }.into_any(),
                             })}
                         </Suspense>
@@ -73,12 +73,12 @@ pub fn Footer() -> impl IntoView {
 fn Col(title: &'static str, items: Vec<(&'static str, &'static str)>) -> impl IntoView {
     view! {
         <div class="footer-col">
-            <div class="type-eyebrow footer-col-title">{title}</div>
-            <ul class="footer-col-list">
+            <div class="type-eyebrow mb-[18px]">{title}</div>
+            <ul class="list-none p-0 m-0 flex flex-col gap-[10px]">
                 {items.into_iter().map(|(label, href)| view! {
                     <li>
-                        <a href={href} class="footer-col-link">
-                            <span class="footer-arrow">"→"</span>
+                        <a href={href} class="font-mono text-[13px] text-ink inline-flex items-center gap-[6px]">
+                            <span class="text-muted">"→"</span>
                             {label}
                         </a>
                     </li>

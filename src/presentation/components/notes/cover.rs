@@ -15,7 +15,7 @@ pub fn Art(category: Category) -> impl IntoView {
 #[component]
 fn Prog() -> impl IntoView {
     view! {
-        <div class="cover-wrap" style="background:var(--terracotta)">
+        <div class="absolute inset-0 flex items-center justify-center overflow-hidden" style="background:var(--terracotta)">
             <svg viewBox="0 0 200 200" width="78%" height="78%" class="cover-svg">
                 {(0..7).map(|i| {
                     let x = 20 + i * 10;
@@ -43,9 +43,9 @@ fn Prog() -> impl IntoView {
 #[component]
 fn Math() -> impl IntoView {
     view! {
-        <div class="cover-wrap" style="background:var(--ochre)">
+        <div class="absolute inset-0 flex items-center justify-center overflow-hidden" style="background:var(--ochre)">
             <div class="cover-grid-bg"/>
-            <div class="cover-glyph italic-serif">"∑"</div>
+            <div class="font-serif italic text-[clamp(80px,16vw,180px)] text-ink opacity-90 relative z-[1] leading-none italic-serif">"∑"</div>
             <span class="cover-meta">"// мат"</span>
         </div>
     }
@@ -54,8 +54,8 @@ fn Math() -> impl IntoView {
 #[component]
 fn Science() -> impl IntoView {
     view! {
-        <div class="cover-wrap" style="background:var(--plum)">
-            <svg viewBox="0 0 200 200" width="100%" height="100%" preserveAspectRatio="none" class="cover-abs-svg">
+        <div class="absolute inset-0 flex items-center justify-center overflow-hidden" style="background:var(--plum)">
+            <svg viewBox="0 0 200 200" width="100%" height="100%" preserveAspectRatio="none" class="absolute inset-0">
                 <defs>
                     <radialGradient id="gs" cx=".5" cy=".5" r=".5">
                         <stop offset="0%" stop-color="var(--ochre)" stop-opacity=".85"/>

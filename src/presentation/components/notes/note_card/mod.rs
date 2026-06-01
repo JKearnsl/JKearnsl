@@ -14,17 +14,17 @@ pub fn NoteCard(post: NoteListItem) -> impl IntoView {
 
     view! {
         <article class="card note-card">
-            <a href={href} class="note-card-inner card-surface">
-                <div class="note-card-cover">
+            <a href={href} class="overflow-hidden flex flex-col no-underline bg-paper border border-[var(--line)] rounded-[var(--radius)]">
+                <div class="relative aspect-[5/4]">
                     <cover::Art category/>
                 </div>
-                <div class="note-card-body">
-                    <div class="note-card-meta">
+                <div class="p-[20px_22px_22px]">
+                    <div class="flex items-center justify-between mb-3">
                         <span class="type-mono" style=format!("color:{}", cat_color)>{cat_label}</span>
                         <span class="type-mono muted">"№"{no_fmt}</span>
                     </div>
-                    <h3 class="h-card note-card-title">{title}</h3>
-                    <div class="note-card-footer">
+                    <h3 class="h-card text-[22px] text-pretty">{title}</h3>
+                    <div class="flex items-center justify-between mt-[18px]">
                         <span class="type-mono muted">{date_fmt}</span>
                     </div>
                 </div>

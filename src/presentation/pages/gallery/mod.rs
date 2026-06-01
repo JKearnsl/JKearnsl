@@ -20,18 +20,18 @@ pub fn Page() -> impl IntoView {
 
     view! {
         <main class="page">
-            <section class="gallery-hero">
+            <section class="pt-[56px] pb-7">
                 <div class="wrap">
-                    <div class="type-eyebrow gallery-eyebrow">
+                    <div class="type-eyebrow flex items-center gap-3">
                         <span class="eyebrow-line"/>
                         "галерея"
                     </div>
-                    <div class="gallery-header">
+                    <div class="flex justify-between items-end gap-6 flex-wrap mt-[18px]">
                         <h1 class="h-section">
                             "что радует "
                             <span class="italic-serif" style="color:var(--terracotta)">"глаз"</span>
                         </h1>
-                        <p class="type-mono muted gallery-hint">
+                        <p class="type-mono muted max-w-[340px] leading-[1.7]">
                             "// перетащи картинку на плитку — она сохранится в браузере."
                             <br/>
                             "// клик по плитке — выбрать файл."
@@ -45,7 +45,7 @@ pub fn Page() -> impl IntoView {
                                     active=move || cat.get() == id
                                     on_click=move |_| cat.set(id)
                                 >
-                                    <span class="chip-dot" style=format!("background:{}", c.color)/>
+                                    <span class="inline-block size-[6px] rounded-full" style=format!("background:{}", c.color)/>
                                     {c.label}
                                     <span class="muted">" "{c.count}</span>
                                 </Chip>
@@ -55,7 +55,7 @@ pub fn Page() -> impl IntoView {
                 </div>
             </section>
 
-            <section class="gallery-grid-section">
+            <section class="pt-2 pb-[88px]">
                 <div class="wrap">
                     <div class="gal-cols">
                         {move || {
@@ -138,17 +138,17 @@ fn ImageSlot(
         >
             {move || if let Some(data) = src.get() {
                 view! {
-                    <div class="slot-filled">
-                        <img src=data alt="" class="slot-img"/>
+                    <div class="absolute inset-0">
+                        <img src=data alt="" class="absolute inset-0 w-full h-full object-cover block"/>
                         <button class="slot-clear" on:click=clear_src.clone()>"×"</button>
                     </div>
                 }.into_any()
             } else {
                 view! {
-                    <div class="slot-empty">
+                    <div class="absolute inset-0">
                         <div class="slot-hatching"/>
-                        <span class="slot-dot" style=format!("background:{}", color)/>
-                        <div class="slot-footer">
+                        <span class="absolute left-3 top-3 size-[9px] rounded-full" style=format!("background:{}", color)/>
+                        <div class="absolute left-0 right-0 bottom-0 py-3 px-[14px] flex justify-between items-end gap-2 font-mono text-[11px] tracking-[.04em] uppercase text-muted">
                             <span class="type-mono muted">{hint}" · "{cap_clone.clone()}</span>
                             <span class="type-mono">"＋ drop"</span>
                         </div>

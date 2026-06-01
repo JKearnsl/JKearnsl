@@ -24,7 +24,7 @@ pub fn Section(
 
     view! {
         <Suspense fallback=move || view! {
-            <div class="admin-loading type-mono">"// загрузка..."</div>
+            <div class="p-20 text-center text-muted type-mono">"// загрузка..."</div>
         }>
             {move || notes.get().map(|posts| {
                 let total   = posts.len();
@@ -33,22 +33,22 @@ pub fn Section(
                 let sci     = posts.iter().filter(|p| p.category == Category::Science).count();
 
                 view! {
-                    <div class="stats-grid">
+                    <div class="grid grid-cols-4 gap-4 mb-[40px] max-[900px]:grid-cols-2">
                         <StatCard label="Публикаций" value=total.to_string()/>
                         <StatCard label="Программирование" value=prog.to_string()/>
                         <StatCard label="Математика" value=math.to_string()/>
                         <StatCard label="Наука" value=sci.to_string()/>
                     </div>
 
-                    <div class="admin-section">
-                        <div class="type-eyebrow admin-section-label">"// все записи"</div>
+                    <div class="mt-2">
+                        <div class="type-eyebrow mb-5 block">"// все записи"</div>
                         {if posts.is_empty() {
                             view! {
-                                <div class="admin-empty type-mono">"// публикаций ещё нет"</div>
+                                <div class="p-[60px] text-center text-muted type-mono">"// публикаций ещё нет"</div>
                             }.into_any()
                         } else {
                             view! {
-                                <div class="admin-table">
+                                <div class="flex flex-col">
                                     {posts.into_iter().map(|post| {
                                         use chrono::Datelike;
                                         use crate::domain::models::note::State;
@@ -63,20 +63,20 @@ pub fn Section(
                                         let post_id_del = post.id.clone();
                                         view! {
                                             <div class="admin-row">
-                                                <span class="admin-row-no type-mono muted">
+                                                <span class="shrink-0 type-mono muted">
                                                     "№"{post.no}
                                                 </span>
                                                 <a href=href class="admin-row-title">{post.title}</a>
                                                 <span class=move || if is_published {
-                                                    "admin-row-state state-published type-mono"
+                                                    "text-[11px] tracking-[.1em] uppercase text-terracotta type-mono"
                                                 } else {
-                                                    "admin-row-state state-draft type-mono"
+                                                    "text-[11px] tracking-[.1em] uppercase text-muted type-mono"
                                                 }>
                                                     {if is_published { "pub" } else { "draft" }}
                                                 </span>
-                                                <span class="admin-row-cat type-mono">{category::label(&cat)}</span>
-                                                <span class="admin-row-date type-mono muted">{date}</span>
-                                                <span class="admin-row-actions">
+                                                <span class="text-muted type-mono max-[900px]:hidden">{category::label(&cat)}</span>
+                                                <span class="text-muted type-mono max-[900px]:hidden">{date}</span>
+                                                <span class="flex gap-[6px] justify-end">
                                                     <button
                                                         class="row-action-btn edit-btn"
                                                         title="Редактировать"
@@ -110,9 +110,9 @@ pub fn Section(
 #[component]
 fn StatCard(label: &'static str, value: String) -> impl IntoView {
     view! {
-        <div class="stat-card card-surface">
-            <div class="stat-card-value">{value}</div>
-            <div class="type-eyebrow stat-card-label">{label}</div>
+        <div class="py-6 px-7 rounded-[var(--radius)] flex flex-col gap-2 bg-paper border border-[var(--line)] rounded-[var(--radius)]">
+            <div class="font-display text-[48px] font-semibold tracking-[-0.04em] leading-none text-ink">{value}</div>
+            <div class="type-eyebrow mt-[2px]">{label}</div>
         </div>
     }.into_any()
 }

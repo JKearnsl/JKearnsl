@@ -32,9 +32,9 @@ pub fn ChipRow(
     children: Children,
 ) -> impl IntoView {
     let full_class = if class.is_empty() {
-        "chip-row".to_string()
+        "flex gap-2 flex-wrap".to_string()
     } else {
-        format!("chip-row {}", class)
+        format!("flex gap-2 flex-wrap {}", class)
     };
     view! {
         <div class=full_class>{children()}</div>
