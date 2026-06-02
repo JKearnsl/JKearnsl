@@ -14,7 +14,7 @@ pub struct UpdateNoteRequest {
     pub title: String,
     pub description: String,
     pub body: String,
-    pub category: String,
+    pub category: Category,
     pub tags: Vec<String>,
     pub featured: bool,
     pub publish: bool,
@@ -59,7 +59,7 @@ impl Interactor<UpdateNoteRequest, UpdateNoteResult> for UpdateNote<'_> {
         note.slug = slug::slugify(&note.title);
         note.description = data.description;
         note.body = data.body;
-        note.category = Category::try_from(data.category.as_str()).unwrap_or(Category::Prog);
+        note.category = data.category;
         note.tags = data.tags;
         note.featured = data.featured;
         note.state = if data.publish { State::Published } else { State::Draft };

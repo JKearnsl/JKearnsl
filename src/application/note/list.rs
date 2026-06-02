@@ -1,13 +1,13 @@
 use crate::application::common::exceptions::ApplicationError;
 use crate::application::common::interactor::Interactor;
 use crate::application::common::note_gateway::NoteReader;
-use crate::domain::models::note::NoteListItem;
+use crate::domain::models::note::{Category, NoteListItem};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct ListNotesRequest {
-    pub category: Option<String>,
+    pub category: Option<Category>,
     pub limit: u64,
     pub offset: u64,
 }
@@ -29,10 +29,10 @@ impl Interactor<ListNotesRequest, ListNotesResult> for ListNotes<'_> {
             self.note_reader.range_all(&data.limit, &data.offset).await
         } else {
             match data.category {
-                Some(ref cat) if cat != "all" => {
-                    self.note_reader.range_by_category(cat, &data.limit, &data.offset).await
+                Some(ref cat) => {
+                    self.note_reader.range_by_category(cat.as_str(), &data.limit, &data.offset).await
                 }
-                _ => self.note_reader.range(&data.limit, &data.offset).await,
+                None => self.note_reader.range(&data.limit, &data.offset).await,
             }
         };
         Ok(ListNotesResult { notes })

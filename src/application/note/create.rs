@@ -12,7 +12,7 @@ pub struct CreateNoteRequest {
     pub title: String,
     pub description: String,
     pub body: String,
-    pub category: String,
+    pub category: Category,
     pub tags: Vec<String>,
     pub featured: bool,
     pub publish: bool,
@@ -53,14 +53,13 @@ impl Interactor<CreateNoteRequest, CreateNoteResult> for CreateNote<'_> {
         }
 
         let no = self.note_reader.next_no().await;
-        let category = Category::try_from(data.category.as_str()).unwrap_or(Category::Prog);
 
         let mut note = Note::new(
             no,
             data.title,
             data.description,
             data.body,
-            category,
+            data.category,
             data.tags,
             data.featured,
         );

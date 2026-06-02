@@ -8,8 +8,10 @@ pub async fn list_by_category(category: Option<String>) -> Result<Vec<NoteListIt
     use crate::interactor_factory::InteractorFactory;
     use crate::application::common::interactor::Interactor;
     use crate::application::note::list::ListNotesRequest;
+    use crate::domain::models::note::Category;
 
     let ioc: Data<dyn InteractorFactory> = extract().await?;
+    let category = category.and_then(|c| Category::try_from(c.as_str()).ok());
     let result = ioc.list_notes().execute(ListNotesRequest {
         category,
         limit: 200,
@@ -143,6 +145,10 @@ pub async fn create(
         .filter(|s| !s.is_empty())
         .collect();
 
+    use crate::domain::models::note::Category;
+    let category = Category::try_from(category.as_str())
+        .map_err(|e| ServerFnError::new(e))?;
+
     let result = ioc
         .create_note(Box::new(id_provider))
         .execute(CreateNoteRequest { title, description, body, category, tags, featured, publish })
@@ -183,6 +189,10 @@ pub async fn update(
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty())
         .collect();
+
+    use crate::domain::models::note::Category;
+    let category = Category::try_from(category.as_str())
+        .map_err(|e| ServerFnError::new(e))?;
 
     let result = ioc
         .update_note(Box::new(id_provider))
