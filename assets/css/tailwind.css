@@ -1,17 +1,12 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap");
+@import "./fonts.css";
 
 /* Scan Rust/Leptos files for class names */
 @source "../src/**/*.rs";
 
-/* Dark mode via data-theme attribute (not .dark class) */
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* ─── Design tokens ──────────────────────────────────────
-   Colors get --color-* names → generates bg-*, text-*, border-* utilities.
-   Fonts override Tailwind's defaults → generates font-* utilities.
-   Radii override Tailwind's defaults → generates rounded-* utilities.
-──────────────────────────────────────────────────────── */
+
 @theme {
   /* Colors */
   --color-cream:      #F0E5CF;
@@ -36,10 +31,7 @@
   --radius-sm: 10px;
 }
 
-/* ─── Base layer ────────────────────────────────────────
-   Short CSS var aliases keep all @layer components CSS unchanged.
-   Dark mode overrides the --color-* values; aliases update automatically.
-──────────────────────────────────────────────────────── */
+
 @layer base {
   :root {
     --cream:      var(--color-cream);
@@ -110,9 +102,7 @@
   @keyframes mwave   { from{transform:scaleY(.4)} to{transform:scaleY(1)} }
 }
 
-/* ─── Utilities ─────────────────────────────────────────
-   Reusable single-purpose classes, safe to apply alongside TW utilities.
-──────────────────────────────────────────────────────── */
+
 @layer utilities {
   .type-mono    { font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
   .type-mono-lg { font-family: var(--font-mono); font-size: 14px; letter-spacing: .02em; }
@@ -138,9 +128,7 @@
   }
 }
 
-/* ─── Components ────────────────────────────────────────
-   All component and page styles. CSS vars unchanged from originals.
-──────────────────────────────────────────────────────── */
+
 @layer components {
 
   /* ── Wipe overlay ── */
