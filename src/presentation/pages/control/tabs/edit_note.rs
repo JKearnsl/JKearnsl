@@ -272,7 +272,7 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
             } else {
                 view! {
                     <textarea
-                        class="w-full min-h-[360px] resize-y bg-paper border border-[var(--line)] border-t-0 rounded-b-[var(--radius-sm)] py-4 px-[18px] font-mono text-[14px] leading-[1.65] text-ink outline-none transition-colors focus:border-terracotta placeholder:text-muted placeholder:opacity-45"
+                        class="w-full min-h-[360px] resize-y bg-paper border border-[var(--line)] rounded-b-[var(--radius-sm)] rounded-t-0 py-4 px-[18px] font-mono text-[14px] leading-[1.65] text-ink outline-none transition-colors focus:border-terracotta placeholder:text-muted placeholder:opacity-45"
                         placeholder="# Заголовок\n\nТекст публикации в Markdown..."
                         prop:value=move || body.get()
                         on:input=move |ev| body.set(event_target_value(&ev))

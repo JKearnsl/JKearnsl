@@ -40,7 +40,7 @@ pub fn Page() -> impl IntoView {
                             <div class="pb-8 border-b border-[var(--line)]">
                                 <div class="type-eyebrow flex items-center gap-3 mb-[18px]">
                                     <span class="w-8 h-px bg-terracotta shrink-0"/>
-                                    "// /control"
+                                    "// control"
                                 </div>
                                 <div class="flex items-baseline justify-between gap-4 flex-wrap">
                                     <h1 class="h-section">"Панель управления"</h1>
