@@ -6,6 +6,7 @@ use crate::presentation::components::ui::button::Button;
 use crate::presentation::components::ui::form_field::FormField;
 use crate::presentation::components::ui::input::Input;
 use crate::presentation::components::ui::tags_input::TagsInput;
+use crate::presentation::components::ui::textarea::Textarea;
 
 #[component]
 pub fn Section(
@@ -159,15 +160,15 @@ pub fn NoteFormFields(
         </FormField>
 
         <FormField label="Заголовок">
-            <Input value=title placeholder="Заголовок публикации..." required=true/>
+            <Input value=title placeholder="Заголовок публикации..." required=true class="bg-paper"/>
         </FormField>
 
         <FormField label="Краткое описание">
-            <textarea
-                rows="3"
+            <Textarea
+                value=description
+                mono=false
+                attr:rows="3"
                 placeholder="Одно-два предложения о публикации..."
-                prop:value=move || description.get()
-                on:input=move |ev| description.set(event_target_value(&ev))
             />
         </FormField>
 
@@ -220,7 +221,7 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
 
     view! {
         <div class="form-field gap-0!">
-            <div class="flex items-center justify-between py-[10px] px-[14px] bg-cream-2 border border-[var(--line)] rounded-t-[var(--radius-sm)]">
+            <div class="flex items-center justify-between py-[10px] px-[14px] bg-cream-2 border border-[var(--line)] border-b-0 rounded-t-[var(--radius-sm)]">
                 <span class="font-mono text-[11px] tracking-[.14em] uppercase text-muted">"Тело публикации"</span>
                 <div class="flex gap-1">
                     <button
@@ -246,7 +247,7 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
 
             {move || if preview_mode.get() {
                 view! {
-                    <div class="min-h-[360px] py-5 px-6 bg-paper border border-[var(--line)] border-t-0 rounded-b-[var(--radius-sm)] prose">
+                    <div class="min-h-[360px] py-5 px-6 bg-paper border border-[var(--line)] rounded-b-[var(--radius-sm)] prose">
                         {move || if preview_pending.get() {
                             view! {
                                 <span class="type-mono muted">"// рендеринг..."</span>
@@ -271,11 +272,11 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
                 }.into_any()
             } else {
                 view! {
-                    <textarea
-                        class="w-full min-h-[360px] resize-y bg-paper border border-[var(--line)] rounded-b-[var(--radius-sm)] rounded-t-0 py-4 px-[18px] font-mono text-[14px] leading-[1.65] text-ink outline-none transition-colors focus:border-terracotta placeholder:text-muted placeholder:opacity-45"
+                    <Textarea
+                        value=body
+                        rounded=false
+                        class="min-h-[360px] py-4 px-[18px] rounded-b-[var(--radius-sm)] rounded-t-none"
                         placeholder="# Заголовок\n\nТекст публикации в Markdown..."
-                        prop:value=move || body.get()
-                        on:input=move |ev| body.set(event_target_value(&ev))
                     />
                 }.into_any()
             }}
