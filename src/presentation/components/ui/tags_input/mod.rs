@@ -43,18 +43,29 @@ pub fn TagsInput(
     };
 
     view! {
-        <div class="tags-input">
+        <div class="flex flex-wrap gap-[6px] items-center bg-cream border border-[var(--line)] \
+            rounded-[var(--radius-sm)] py-2 px-3 min-h-[50px] cursor-text \
+            transition-[border-color,box-shadow] duration-200 \
+            focus-within:border-terracotta \
+            focus-within:shadow-[0_0_0_3px_color-mix(in_oklab,var(--terracotta)_12%,transparent)]">
             <For
                 each=move || value.get()
                 key=|tag| tag.clone()
                 children=move |tag| {
                     let t = tag.clone();
                     view! {
-                        <span class="tags-input-tag">
+                        <span class="inline-flex items-center gap-[4px] font-mono text-[11px] \
+                            tracking-[.08em] uppercase bg-ink text-cream rounded-full \
+                            py-[4px] pl-[10px] pr-[4px] select-none">
                             {tag}
                             <button
                                 type="button"
-                                class="tags-input-remove"
+                                class="flex items-center justify-center w-[18px] h-[18px] \
+                                    rounded-full border-0 \
+                                    bg-[color-mix(in_oklab,var(--cream)_18%,transparent)] \
+                                    text-cream text-[13px] leading-none cursor-pointer p-0 \
+                                    transition-colors duration-150 \
+                                    hover:bg-[color-mix(in_oklab,var(--cream)_35%,transparent)]"
                                 on:click=move |_| {
                                     let t = t.clone();
                                     value.update(|v| v.retain(|x| x != &t));
@@ -68,7 +79,9 @@ pub fn TagsInput(
             />
             <input
                 type="text"
-                class="tags-input-field"
+                class="flex-1 min-w-[120px] bg-transparent border-none outline-none \
+                    font-sans text-[15px] text-ink py-[3px] \
+                    placeholder:text-muted placeholder:opacity-50"
                 placeholder=move || {
                     if value.get().is_empty() {
                         placeholder.clone().unwrap_or_default()

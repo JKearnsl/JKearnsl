@@ -1,31 +1,38 @@
 use leptos::prelude::*;
 
+const BASE: &str = "inline-flex items-center gap-[6px] py-2 px-[14px] rounded-full \
+    font-mono text-[11px] tracking-[.08em] uppercase border \
+    transition-all duration-200 cursor-pointer";
+
 #[component]
 pub fn Chip(
     active: impl Fn() -> bool + Send + Sync + 'static,
     on_click: impl Fn(leptos::ev::MouseEvent) + Send + Sync + 'static,
     children: Children,
 ) -> impl IntoView {
+    let cls = move || {
+        if active() {
+            format!("{BASE} bg-ink text-cream border-ink")
+        } else {
+            format!("{BASE} bg-transparent text-ink border-[var(--line)] hover:border-ink")
+        }
+    };
     view! {
-        <button
-            class="chip"
-            class:chip-active=active
-            on:click=on_click
-        >
+        <button class=cls on:click=on_click>
             {children()}
         </button>
     }
 }
 
-/// Non-interactive chip for displaying tags.
 #[component]
 pub fn Tag(children: Children) -> impl IntoView {
     view! {
-        <span class="chip">{children()}</span>
+        <span class=format!("{BASE} bg-transparent text-ink border-[var(--line)]")>
+            {children()}
+        </span>
     }
 }
 
-/// Row container for chips/tags.
 #[component]
 pub fn ChipRow(
     #[prop(optional, into)] class: String,

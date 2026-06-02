@@ -7,8 +7,13 @@ pub fn FormField(
     children: Children,
 ) -> impl IntoView {
     view! {
-        <div class="form-field">
-            <label for=label_for>{label}</label>
+        <div class="flex flex-col gap-2">
+            <label
+                class="font-mono text-[11px] tracking-[.16em] uppercase text-muted"
+                for=label_for
+            >
+                {label}
+            </label>
             {children()}
         </div>
     }

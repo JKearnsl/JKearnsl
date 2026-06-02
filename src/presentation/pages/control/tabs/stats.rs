@@ -48,7 +48,7 @@ pub fn Section(
                             }.into_any()
                         } else {
                             view! {
-                                <div class="flex flex-col">
+                                <div class="flex flex-col divide-y divide-[var(--line)]">
                                     {posts.into_iter().map(|post| {
                                         use chrono::Datelike;
                                         use crate::domain::models::note::State;
@@ -62,11 +62,16 @@ pub fn Section(
                                         let post_id = post.id.clone();
                                         let post_id_del = post.id.clone();
                                         view! {
-                                            <div class="admin-row">
+                                            <div class="grid grid-cols-[48px_1fr_64px_140px_100px_72px] max-[900px]:grid-cols-[40px_1fr_56px_72px] items-center gap-3 py-[13px] px-4 rounded-[var(--radius-sm)] transition-colors duration-150 hover:bg-cream-2">
                                                 <span class="shrink-0 type-mono muted">
                                                     "№"{post.no}
                                                 </span>
-                                                <a href=href class="admin-row-title">{post.title}</a>
+                                                <a
+                                                    href=href
+                                                    class="font-sans text-[15px] font-medium text-ink whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 hover:text-terracotta"
+                                                >
+                                                    {post.title}
+                                                </a>
                                                 <span class=move || if is_published {
                                                     "text-[11px] tracking-[.1em] uppercase text-terracotta type-mono"
                                                 } else {
@@ -78,14 +83,14 @@ pub fn Section(
                                                 <span class="text-muted type-mono max-[900px]:hidden">{date}</span>
                                                 <span class="flex gap-[6px] justify-end">
                                                     <button
-                                                        class="row-action-btn edit-btn"
+                                                        class="w-[30px] h-[30px] rounded-[8px] border border-[var(--line)] inline-flex items-center justify-center text-[13px] transition-[background,border-color,color] duration-150 hover:bg-ink hover:border-ink hover:text-cream"
                                                         title="Редактировать"
                                                         on:click=move |_| view.set(AdminView::EditPost(post_id.clone()))
                                                     >
                                                         "✏"
                                                     </button>
                                                     <button
-                                                        class="row-action-btn delete-btn"
+                                                        class="w-[30px] h-[30px] rounded-[8px] border border-[var(--line)] inline-flex items-center justify-center text-[13px] transition-[background,border-color,color] duration-150 hover:bg-rust hover:border-rust hover:text-cream"
                                                         title="Удалить"
                                                         on:click=move |_| {
                                                             delete_action.dispatch(post_id_del.clone());
@@ -110,7 +115,7 @@ pub fn Section(
 #[component]
 fn StatCard(label: &'static str, value: String) -> impl IntoView {
     view! {
-        <div class="py-6 px-7 rounded-[var(--radius)] flex flex-col gap-2 bg-paper border border-[var(--line)] rounded-[var(--radius)]">
+        <div class="py-6 px-7 rounded-[var(--radius)] flex flex-col gap-2 bg-paper border border-[var(--line)]">
             <div class="font-display text-[48px] font-semibold tracking-[-0.04em] leading-none text-ink">{value}</div>
             <div class="type-eyebrow mt-[2px]">{label}</div>
         </div>

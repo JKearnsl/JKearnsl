@@ -8,28 +8,36 @@ pub enum Variant {
 }
 
 impl Variant {
-    fn as_str(self) -> &'static str {
+    fn classes(self) -> &'static str {
         match self {
-            Variant::Accent => "btn accent",
-            Variant::Ghost => "btn ghost",
+            Variant::Accent => {
+                "inline-flex items-center gap-[10px] py-[14px] px-[22px] rounded-full \
+                font-mono text-[12px] tracking-[.08em] uppercase \
+                bg-terracotta text-cream border border-terracotta \
+                [transition:transform_.2s_ease,background_.2s_ease] hover:-translate-y-[2px]"
+            }
+            Variant::Ghost => {
+                "inline-flex items-center gap-[10px] py-[14px] px-[22px] rounded-full \
+                font-mono text-[12px] tracking-[.08em] uppercase \
+                bg-transparent text-ink border border-ink \
+                [transition:transform_.2s_ease,background_.2s_ease,color_.2s_ease] \
+                hover:-translate-y-[2px] hover:bg-ink hover:text-cream"
+            }
         }
     }
 }
 
-/// Renders as `<a>` when `href` is provided, otherwise as `<button>`.
 #[component]
 pub fn Button(
     #[prop(default = Variant::Accent)] variant: Variant,
     #[prop(optional, into)] class: String,
-    // --- <button> props ---
     #[prop(default = false)] submit: bool,
     #[prop(optional, into)] pending: Signal<bool>,
-    // --- <a> props ---
     #[prop(optional, into)] href: Option<String>,
     #[prop(optional)] target: Option<&'static str>,
     children: Children,
 ) -> impl IntoView {
-    let base = variant.as_str();
+    let base = variant.classes();
     let full_class = if class.is_empty() {
         base.to_string()
     } else {

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "./fonts.css";
 
-/* Scan Rust/Leptos files for class names */
 @source "../src/**/*.rs";
 
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -141,7 +140,7 @@
   .wipe.in  { animation: wipeIn  .45s cubic-bezier(.7,0,.3,1) forwards; }
   .wipe.out { animation: wipeOut .45s cubic-bezier(.7,0,.3,1) forwards; }
 
-  /* ── Header (theme-toggle KEPT — has nested [data-theme="dark"] .theme-toggle .knob) ── */
+  /* ── Header theme toggle ── */
   .theme-toggle {
     width: 54px; height: 30px; border-radius: 999px;
     border: 1px solid var(--line); background: var(--paper);
@@ -154,100 +153,7 @@
   }
   [data-theme="dark"] .theme-toggle .knob { transform: translateX(24px); background: var(--ochre); }
 
-  /* ── Card ── */
-  .card { position: relative; transition: transform .35s cubic-bezier(.2,.7,.2,1); cursor: pointer; }
-  .card:hover { transform: translateY(-6px); }
-
-  /* ── Badge ── */
-  .badge {
-    padding: 6px 14px; border-radius: 999px; color: var(--cream);
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
-  }
-
-  /* ── Button ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 14px 22px; border-radius: 999px;
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
-    background: var(--ink); color: var(--cream);
-    border: 1px solid var(--ink);
-    transition: transform .2s ease, background .2s ease;
-  }
-  .btn:hover { transform: translateY(-2px); }
-  .btn.ghost { background: transparent; color: var(--ink); }
-  .btn.ghost:hover { background: var(--ink); color: var(--cream); }
-  .btn.accent { background: var(--terracotta); color: var(--cream); border-color: var(--terracotta); }
-
-  /* ── Chip ── */
-  .chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 14px; border-radius: 999px;
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
-    background: transparent; border: 1px solid var(--line); color: var(--ink);
-    transition: all .2s ease; cursor: pointer;
-  }
-  .chip:hover { border-color: var(--ink); }
-  .chip-active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
-
-  /* ── Form field ── */
-  .form-field { display: flex; flex-direction: column; gap: 8px; }
-  .form-field label {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
-  }
-  .form-field input {
-    background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius-sm);
-    padding: 13px 16px; font-family: var(--font-sans); font-size: 15px; color: var(--ink);
-    outline: none; transition: border-color .2s ease, box-shadow .2s ease; width: 100%;
-  }
-  /*.form-field input:focus {*/
-  /*  border-color: var(--terracotta);*/
-  /*  box-shadow: 0 0 0 3px color-mix(in oklab, var(--terracotta) 12%, transparent);*/
-  /*}*/
-  /*.form-field input::placeholder { color: var(--muted); opacity: .5; }*/
-  .form-field select {
-    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm);
-    padding: 12px 16px; font-family: var(--font-sans); font-size: 15px; color: var(--ink);
-    outline: none; transition: border-color .2s ease, box-shadow .2s ease;
-    width: 100%;
-  }
-  /*.form-field select:focus {*/
-  /*  border-color: var(--terracotta);*/
-  /*  box-shadow: 0 0 0 3px color-mix(in oklab, var(--terracotta) 12%, transparent);*/
-  /*}*/
-
-  /* ── Tags input ── */
-  .tags-input {
-    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
-    background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius-sm);
-    padding: 8px 12px; min-height: 50px; cursor: text;
-    transition: border-color .2s ease, box-shadow .2s ease;
-  }
-  .tags-input:focus-within {
-    border-color: var(--terracotta);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--terracotta) 12%, transparent);
-  }
-  .tags-input-tag {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
-    background: var(--ink); color: var(--cream); border-radius: 999px;
-    padding: 4px 4px 4px 10px; user-select: none;
-  }
-  .tags-input-remove {
-    display: flex; align-items: center; justify-content: center;
-    width: 18px; height: 18px; border-radius: 50%; border: none;
-    background: color-mix(in oklab, var(--cream) 18%, transparent);
-    color: var(--cream); font-size: 13px; line-height: 1; cursor: pointer; padding: 0;
-    transition: background .15s ease;
-  }
-  .tags-input-remove:hover { background: color-mix(in oklab, var(--cream) 35%, transparent); }
-  .tags-input-field {
-    flex: 1; min-width: 120px; background: transparent; border: none; outline: none;
-    font-family: var(--font-sans); font-size: 15px; color: var(--ink); padding: 3px 0;
-  }
-  .tags-input-field::placeholder { color: var(--muted); opacity: .5; }
-
-  /* ── Note cover (cover-meta, cover-grid-bg KEPT — complex) ── */
+  /* ── Note cover ── */
   .cover-meta {
     position: absolute; left: 16px; bottom: 14px;
     font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
@@ -289,7 +195,7 @@
   .prose tr:last-child td { border-bottom: none; }
   .prose input[type="checkbox"] { margin-right: 6px; accent-color: var(--terracotta); }
 
-  /* ── Home: marquee (KEPT — complex animation + clamp font-size) ── */
+  /* ── Home: marquee ── */
   .marquee {
     display: flex; gap: 24px; white-space: nowrap;
     animation: marq 36s linear infinite; will-change: transform;
@@ -297,12 +203,12 @@
     font-weight: 600; letter-spacing: -.03em; line-height: 1;
   }
 
-  /* ── Home: newsletter decorations (KEPT — complex absolute positioning) ── */
+  /* ── Home: newsletter decorations ── */
   .nl-deco    { position: absolute; pointer-events: none; }
   .nl-deco-tr { right: -40px; top: -40px; width: 260px; height: 260px; opacity: .85; }
   .nl-deco-bl { left: -100px; bottom: -100px; width: 240px; height: 240px; opacity: .6; }
 
-  /* ── Gallery page (column-count, nested hover selectors — KEPT) ── */
+  /* ── Gallery page ── */
   .gal-cols { column-count: 3; column-gap: 18px; }
   .gal-slot {
     position: relative; width: 100%;
@@ -326,13 +232,13 @@
   @media (max-width: 900px) { .gal-cols { column-count: 2; } }
   @media (max-width: 560px) { .gal-cols { column-count: 1; } }
 
-  /* ── Music: scrubber track (KEPT — has ::before pseudo-element) ── */
+  /* ── Music: scrubber track ── */
   .scrubber-track {
     position: relative; height: 22px; display: flex; align-items: center; cursor: pointer;
   }
   .scrubber-track::before { content: ""; position: absolute; left: 0; right: 0; height: 4px; background: var(--line); border-radius: 4px; }
 
-  /* ── Music: track row (KEPT — has :hover background and .track-active modifier) ── */
+  /* ── Music: track row ── */
   .track-row {
     width: 100%; text-align: left;
     display: grid; grid-template-columns: 46px 56px 1fr auto auto;
@@ -343,14 +249,14 @@
   .track-row:hover { background: color-mix(in oklab, var(--cream-2) 55%, transparent); }
   .track-active { background: var(--cream-2); }
 
-  /* ── Music: track-kind (KEPT — complex absolute positioning with opacity) ── */
+  /* ── Music: track-kind ── */
   .track-kind {
     position: absolute; left: 14px; top: 12px;
     font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
     text-transform: uppercase; color: var(--cream); opacity: .85;
   }
 
-  /* ── Sign-in card (KEPT — has ::after pseudo-element and clip-path) ── */
+  /* ── Sign-in card ── */
   .sign-in-card {
     background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
     padding: 52px 44px 48px; position: relative; overflow: hidden;
@@ -369,39 +275,5 @@
     background: linear-gradient(to bottom, var(--terracotta), var(--ochre));
     border-radius: var(--radius) 0 0 var(--radius);
   }
-  .sign-in-eyebrow .eyebrow-line { width: 28px; height: 1px; background: var(--terracotta); flex-shrink: 0; }
   @media (max-width: 520px) { .sign-in-card { padding: 40px 28px 36px; } }
-
-  /* ── Control (admin) page ── */
-  .admin-row {
-    display: grid; grid-template-columns: 48px 1fr 64px 140px 100px 72px;
-    align-items: center; gap: 12px;
-    padding: 13px 16px; border-radius: var(--radius-sm); transition: background .15s ease;
-  }
-  .admin-row:hover { background: var(--cream-2); }
-  .admin-row + .admin-row { border-top: 1px solid var(--line); }
-  .admin-row-title {
-    font-family: var(--font-sans); font-size: 15px; font-weight: 500; color: var(--ink);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .15s;
-  }
-  .admin-row-title:hover { color: var(--terracotta); }
-  .row-action-btn {
-    width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line);
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 13px; transition: background .15s, border-color .15s, color .15s;
-  }
-  .edit-btn:hover   { background: var(--ink); border-color: var(--ink); color: var(--cream); }
-  .delete-btn:hover { background: var(--rust); border-color: var(--rust); color: var(--cream); }
-  @media (max-width: 900px) {
-    .admin-row { grid-template-columns: 40px 1fr 56px 72px; }
-  }
-
-  /* ── Check label (input[type="checkbox"] accent-color KEPT) ── */
-  .check-label input[type="checkbox"] { accent-color: var(--terracotta); width: 15px; height: 15px; cursor: pointer; }
-
-  /* ── Not-found: span color descendant selector (KEPT) ── */
-  /* .not-found-title span { color: var(--terracotta); } — inlined as text-terracotta on span directly */
-
-  /* ── About: nested eyebrow override ── */
-  .about-details .type-eyebrow { margin-bottom: 14px; }
 }

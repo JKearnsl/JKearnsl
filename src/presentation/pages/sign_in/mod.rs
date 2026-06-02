@@ -5,6 +5,13 @@ use crate::presentation::api::{session, users};
 use crate::presentation::components::ui::button::Button;
 use crate::presentation::components::ui::form_field::FormField;
 
+const INPUT_CLASS: &str = "w-full bg-cream border border-[var(--line)] rounded-[var(--radius-sm)] \
+    py-[13px] px-4 font-sans text-[15px] text-ink outline-none \
+    transition-[border-color,box-shadow] duration-200 \
+    focus:border-terracotta \
+    focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--terracotta)_12%,transparent)] \
+    placeholder:text-muted placeholder:opacity-60";
+
 #[component]
 pub fn Page() -> impl IntoView {
     let login_action = ServerAction::<session::Create>::new();
@@ -66,6 +73,7 @@ pub fn Page() -> impl IntoView {
                                                 type="text"
                                                 id="username"
                                                 name="username"
+                                                class=INPUT_CLASS
                                                 required
                                                 autocomplete="username"
                                                 placeholder="admin"
@@ -76,6 +84,7 @@ pub fn Page() -> impl IntoView {
                                                 type="password"
                                                 id="password"
                                                 name="password"
+                                                class=INPUT_CLASS
                                                 required
                                                 autocomplete="current-password"
                                                 placeholder="••••••••"

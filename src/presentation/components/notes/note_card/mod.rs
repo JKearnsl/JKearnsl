@@ -13,7 +13,7 @@ pub fn NoteCard(post: NoteListItem) -> impl IntoView {
     let category = post.category.clone();
 
     view! {
-        <article class="card note-card">
+        <article class="relative [transition:transform_.35s_cubic-bezier(.2,.7,.2,1)] cursor-pointer hover:-translate-y-[6px]">
             <a href={href} class="overflow-hidden flex flex-col no-underline bg-paper border border-[var(--line)] rounded-[var(--radius)]">
                 <div class="relative aspect-[5/4]">
                     <cover::Art category/>

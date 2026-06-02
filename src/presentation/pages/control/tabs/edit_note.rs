@@ -3,8 +3,10 @@ use crate::presentation::pages::control::AdminView;
 use crate::domain::models::note::NoteListItem;
 use crate::presentation::api;
 use crate::presentation::components::ui::button::Button;
+use crate::presentation::components::ui::checkbox::Checkbox;
 use crate::presentation::components::ui::form_field::FormField;
 use crate::presentation::components::ui::input::Input;
+use crate::presentation::components::ui::select::{Select, SelectOption};
 use crate::presentation::components::ui::tags_input::TagsInput;
 use crate::presentation::components::ui::textarea::Textarea;
 
@@ -53,7 +55,6 @@ fn EditForm(
     let tags         = RwSignal::new(note.tags.clone());
     let featured     = RwSignal::new(note.featured);
     let publish      = RwSignal::new(note.state == State::Published);
-
 
     let success: RwSignal<Option<String>> = RwSignal::new(None);
 
@@ -147,16 +148,13 @@ pub fn NoteFormFields(
     featured: RwSignal<bool>,
     publish: RwSignal<bool>,
 ) -> impl IntoView {
-
     view! {
         <FormField label="Категория">
-            <select
-                on:change=move |ev| category.set(event_target_value(&ev))
-            >
-                <option value="prog" selected=move || category.get() == "prog">"Программирование"</option>
-                <option value="math" selected=move || category.get() == "math">"Математика"</option>
-                <option value="science" selected=move || category.get() == "science">"Наука"</option>
-            </select>
+            <Select value=category>
+                <SelectOption value="prog" selected=move || category.get() == "prog">"Программирование"</SelectOption>
+                <SelectOption value="math" selected=move || category.get() == "math">"Математика"</SelectOption>
+                <SelectOption value="science" selected=move || category.get() == "science">"Наука"</SelectOption>
+            </Select>
         </FormField>
 
         <FormField label="Заголовок">
@@ -180,19 +178,11 @@ pub fn NoteFormFields(
 
         <div class="flex gap-7 flex-wrap">
             <label class="flex items-center gap-[9px] font-mono text-[12px] tracking-[.06em] uppercase text-muted cursor-pointer select-none">
-                <input
-                    type="checkbox"
-                    prop:checked=move || featured.get()
-                    on:change=move |_| featured.update(|v| *v = !*v)
-                />
+                <Checkbox value=featured/>
                 "Отметить как особую"
             </label>
             <label class="flex items-center gap-[9px] font-mono text-[12px] tracking-[.06em] uppercase text-muted cursor-pointer select-none">
-                <input
-                    type="checkbox"
-                    prop:checked=move || publish.get()
-                    on:change=move |_| publish.update(|v| *v = !*v)
-                />
+                <Checkbox value=publish/>
                 "Опубликовать"
             </label>
         </div>
@@ -220,7 +210,7 @@ fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
     };
 
     view! {
-        <div class="form-field gap-0!">
+        <div class="flex flex-col">
             <div class="flex items-center justify-between py-[10px] px-[14px] bg-cream-2 border border-[var(--line)] border-b-0 rounded-t-[var(--radius-sm)]">
                 <span class="font-mono text-[11px] tracking-[.14em] uppercase text-muted">"Тело публикации"</span>
                 <div class="flex gap-1">

@@ -42,7 +42,7 @@ fn FeaturedCard(post: NoteListItem, big: bool) -> impl IntoView {
     let category = post.category.clone();
 
     view! {
-        <article class="card bg-paper border border-[var(--line)] rounded-[var(--radius)] overflow-hidden flex flex-col">
+        <article class="relative [transition:transform_.35s_cubic-bezier(.2,.7,.2,1)] cursor-pointer hover:-translate-y-[6px] bg-paper border border-[var(--line)] rounded-[var(--radius)] overflow-hidden flex flex-col">
             <a href={href} class="no-underline overflow-hidden flex flex-col flex-1">
                 <div class=move || if big { "relative aspect-[16/11] w-full" } else { "relative aspect-[5/4] w-full" }>
                     <cover::Art category/>
