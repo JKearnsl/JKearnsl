@@ -45,7 +45,7 @@ pub fn NoteContent(post: crate::domain::models::note::Note) -> impl IntoView {
     view! {
         // progress bar
         <div
-            class="progress-bar"
+            class="fixed left-0 top-0 h-[3px] bg-terracotta z-50 [transition:width_.08s_linear]"
             style=move || format!("width:{}%", progress.get() * 100.0)
         />
 

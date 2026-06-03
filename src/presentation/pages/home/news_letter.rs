@@ -18,10 +18,10 @@ pub fn Section() -> impl IntoView {
         <section class="py-[80px]">
             <div class="wrap">
                 <div class="bg-ink text-cream rounded-[28px] p-[56px] grid grid-cols-[1.2fr_1fr] gap-[40px] items-center relative overflow-hidden max-[760px]:grid-cols-1 max-[760px]:p-[36px_28px]">
-                    <div class="nl-deco nl-deco-tr" style="color:var(--terracotta)">
+                    <div class="absolute pointer-events-none -right-[40px] -top-[40px] w-[260px] h-[260px] opacity-85" style="color:var(--terracotta)">
                         <HalftoneDecoration rows=20 cols=20 max_r=4.0/>
                     </div>
-                    <div class="nl-deco nl-deco-bl" style="color:var(--ochre)">
+                    <div class="absolute pointer-events-none -left-[100px] -bottom-[100px] w-[240px] h-[240px] opacity-60" style="color:var(--ochre)">
                         <HalftoneDecoration rows=18 cols=18 max_r=3.4/>
                     </div>
                     <div class="relative">

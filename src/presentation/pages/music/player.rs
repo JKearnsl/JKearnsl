@@ -66,7 +66,8 @@ fn Controls(idx: RwSignal<usize>, playing: RwSignal<bool>, cur: RwSignal<u32>) -
 fn Scrubber(idx: RwSignal<usize>, cur: RwSignal<u32>, #[prop(into)] progress: Signal<f64>) -> AnyView {
     view! {
         <div class="mt-7">
-            <div class="scrubber-track">
+            <div class="relative h-[22px] flex items-center cursor-pointer">
+                <div class="absolute left-0 right-0 h-[4px] bg-[var(--line)] rounded"/>
                 <div class="absolute left-0 h-[4px] bg-terracotta rounded" style=move || format!("width:{}%", progress.get() * 100.0)/>
                 <div class="absolute size-[14px] -ml-[7px] rounded-full bg-ink border-2 border-cream" style=move || format!("left:{}%", progress.get() * 100.0)/>
             </div>

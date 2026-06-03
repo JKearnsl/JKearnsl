@@ -4,7 +4,7 @@ use leptos::prelude::*;
 pub fn Art(color: &'static str, kind: &'static str, playing: bool) -> AnyView {
     view! {
         <div class="absolute inset-0 overflow-hidden" style=format!("background:{}", color)>
-            <span class="track-kind type-mono">"// "{kind}</span>
+            <span class="absolute left-[14px] top-[12px] font-mono text-[11px] tracking-[.06em] uppercase text-cream opacity-85">"// "{kind}</span>
             <div class="absolute left-0 right-0 bottom-0 h-[44%] flex items-end gap-[2px] px-[14px] pb-[14px]">
                 {(0..24usize).map(|i| {
                     let h = (0.35 + ((i * 7 + i * i) % 65) as f64 / 100.0) * 100.0;

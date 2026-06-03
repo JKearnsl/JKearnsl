@@ -6,7 +6,7 @@ pub fn Section() -> AnyView {
         <section class="pt-[56px] pb-8">
             <div class="wrap">
                 <div class="type-eyebrow flex items-center gap-3">
-                    <span class="eyebrow-line"/>
+                    <span class="inline-block w-[36px] h-px bg-current"/>
                     "музыка"
                 </div>
                 <div class="flex justify-between items-end gap-6 flex-wrap mt-[18px]">

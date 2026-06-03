@@ -12,8 +12,11 @@ pub fn Section(idx: RwSignal<usize>, playing: RwSignal<bool>) -> AnyView {
                         let is_active = move || idx.get() == i;
                         view! {
                             <button
-                                class="track-row"
-                                class:track-active=is_active
+                                class=move || if is_active() {
+                                    "w-full text-left grid [grid-template-columns:46px_56px_1fr_auto_auto] items-center gap-[18px] py-4 px-3 border-b border-[var(--line)] bg-cream-2 cursor-pointer"
+                                } else {
+                                    "w-full text-left grid [grid-template-columns:46px_56px_1fr_auto_auto] items-center gap-[18px] py-4 px-3 border-b border-[var(--line)] bg-transparent cursor-pointer [transition:background-color_.18s_ease] hover:bg-[color-mix(in_oklab,var(--cream-2)_55%,transparent)]"
+                                }
                                 on:click=move |_| { idx.set(i); playing.set(true); }
                             >
                                 <span class="font-mono text-[13px]" style=move || {

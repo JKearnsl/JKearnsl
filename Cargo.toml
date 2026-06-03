@@ -104,7 +104,6 @@ assets-dir = "assets"
 reload-port = 3001
 
 browserquery = "defaults"
-env = "PROD"
 
 bin-features = ["ssr"]
 bin-default-features = false

@@ -58,7 +58,7 @@ fn FeaturedCard(post: NoteListItem, big: bool) -> impl IntoView {
                     })}
                     <div class="mt-auto flex justify-between items-center pt-2">
                         <span class="type-mono muted">"№"{no_fmt}</span>
-                        <span class="arrow-circle">"→"</span>
+                        <span class="size-[38px] rounded-full bg-ink text-cream inline-flex items-center justify-center font-mono text-[13px]">"→"</span>
                     </div>
                 </div>
             </a>

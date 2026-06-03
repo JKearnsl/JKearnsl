@@ -118,13 +118,6 @@
   .wrap { max-width: var(--grid); margin: 0 auto; padding-inline: var(--pad); position: relative; z-index: 2; }
   .page { animation: pageIn .55s cubic-bezier(.2,.7,.2,1) both; }
 
-  .eyebrow-line { display: inline-block; width: 36px; height: 1px; background: currentColor; }
-  .arrow-circle {
-    width: 38px; height: 38px; border-radius: 50%;
-    background: var(--ink); color: var(--cream);
-    display: inline-flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono); font-size: 13px;
-  }
 }
 
 
@@ -140,22 +133,6 @@
   .wipe.in  { animation: wipeIn  .45s cubic-bezier(.7,0,.3,1) forwards; }
   .wipe.out { animation: wipeOut .45s cubic-bezier(.7,0,.3,1) forwards; }
 
-
-  /* ── Note cover ── */
-  .cover-meta {
-    position: absolute; left: 16px; bottom: 14px;
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--cream); opacity: .85;
-  }
-  .cover-grid-bg {
-    position: absolute; inset: 0;
-    background-image: linear-gradient(var(--ink) 1px, transparent 1px),
-      linear-gradient(90deg, var(--ink) 1px, transparent 1px);
-    background-size: 32px 32px; opacity: .12;
-  }
-
-  /* ── Note content / article page ── */
-  .progress-bar { position: fixed; left: 0; top: 0; height: 3px; background: var(--terracotta); z-index: 50; transition: width .08s linear; }
 
   /* ── Prose (markdown rendered content) ── */
   .prose { font-size: 18px; line-height: 1.65; color: var(--ink-2); }
@@ -191,77 +168,4 @@
     font-weight: 600; letter-spacing: -.03em; line-height: 1;
   }
 
-  /* ── Home: newsletter decorations ── */
-  .nl-deco    { position: absolute; pointer-events: none; }
-  .nl-deco-tr { right: -40px; top: -40px; width: 260px; height: 260px; opacity: .85; }
-  .nl-deco-bl { left: -100px; bottom: -100px; width: 240px; height: 240px; opacity: .6; }
-
-  /* ── Gallery page ── */
-  .gal-cols { column-count: 3; column-gap: 18px; }
-  .gal-slot {
-    position: relative; width: 100%;
-    border: 1px solid var(--ink); background: var(--cream-2);
-    overflow: hidden; cursor: pointer; margin-bottom: 18px; break-inside: avoid;
-  }
-  .slot-over   { border-color: var(--terracotta); outline: 2px solid var(--terracotta); outline-offset: -4px; }
-  .slot-clear {
-    position: absolute; top: 8px; right: 8px;
-    width: 28px; height: 28px; border-radius: 50%;
-    background: color-mix(in oklab, var(--ink) 78%, transparent); color: var(--cream);
-    display: inline-flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1;
-    opacity: 0; transition: opacity .18s ease;
-  }
-  .gal-slot:hover .slot-clear { opacity: 1; }
-  .slot-hatching {
-    position: absolute; inset: 0;
-    background-image: repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 11px);
-    opacity: .9;
-  }
-  @media (max-width: 900px) { .gal-cols { column-count: 2; } }
-  @media (max-width: 560px) { .gal-cols { column-count: 1; } }
-
-  /* ── Music: scrubber track ── */
-  .scrubber-track {
-    position: relative; height: 22px; display: flex; align-items: center; cursor: pointer;
-  }
-  .scrubber-track::before { content: ""; position: absolute; left: 0; right: 0; height: 4px; background: var(--line); border-radius: 4px; }
-
-  /* ── Music: track row ── */
-  .track-row {
-    width: 100%; text-align: left;
-    display: grid; grid-template-columns: 46px 56px 1fr auto auto;
-    align-items: center; gap: 18px;
-    padding: 16px 12px; border-bottom: 1px solid var(--line);
-    background: transparent; cursor: pointer; transition: background .18s ease;
-  }
-  .track-row:hover { background: color-mix(in oklab, var(--cream-2) 55%, transparent); }
-  .track-active { background: var(--cream-2); }
-
-  /* ── Music: track-kind ── */
-  .track-kind {
-    position: absolute; left: 14px; top: 12px;
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
-    text-transform: uppercase; color: var(--cream); opacity: .85;
-  }
-
-  /* ── Sign-in card ── */
-  .sign-in-card {
-    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 52px 44px 48px; position: relative; overflow: hidden;
-  }
-  .sign-in-card-deco {
-    position: absolute; right: -1px; top: -1px;
-    width: 120px; height: 120px;
-    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 18px 18px;
-    clip-path: polygon(100% 0, 100% 100%, 0 0);
-    opacity: .7; pointer-events: none;
-  }
-  .sign-in-card::after {
-    content: "";
-    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-    background: linear-gradient(to bottom, var(--terracotta), var(--ochre));
-    border-radius: var(--radius) 0 0 var(--radius);
-  }
-  @media (max-width: 520px) { .sign-in-card { padding: 40px 28px 36px; } }
 }

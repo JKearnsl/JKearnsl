@@ -35,7 +35,7 @@ fn Prog() -> impl IntoView {
                 }).collect_view()}
                 <circle cx="100" cy="100" r="14" fill="var(--ochre)"/>
             </svg>
-            <span class="cover-meta">"// прог"</span>
+            <span class="absolute left-[16px] bottom-[14px] font-mono text-[11px] tracking-[.06em] uppercase text-cream opacity-85">"// прог"</span>
         </div>
     }
 }
@@ -44,9 +44,9 @@ fn Prog() -> impl IntoView {
 fn Math() -> impl IntoView {
     view! {
         <div class="absolute inset-0 flex items-center justify-center overflow-hidden" style="background:var(--ochre)">
-            <div class="cover-grid-bg"/>
+            <div class="absolute inset-0 [background-image:linear-gradient(var(--ink)_1px,transparent_1px),linear-gradient(90deg,var(--ink)_1px,transparent_1px)] [background-size:32px_32px] opacity-[.12]"/>
             <div class="font-serif italic text-[clamp(80px,16vw,180px)] text-ink opacity-90 relative z-[1] leading-none italic-serif">"∑"</div>
-            <span class="cover-meta">"// мат"</span>
+            <span class="absolute left-[16px] bottom-[14px] font-mono text-[11px] tracking-[.06em] uppercase text-cream opacity-85">"// мат"</span>
         </div>
     }
 }
@@ -77,7 +77,7 @@ fn Science() -> impl IntoView {
                 <circle cx="36" cy="80" r="2.4" fill="var(--cream)"/>
                 <circle cx="165" cy="120" r="1.8" fill="var(--cream)"/>
             </svg>
-            <span class="cover-meta" style="color:var(--cream)">"// наука"</span>
+            <span class="absolute left-[16px] bottom-[14px] font-mono text-[11px] tracking-[.06em] uppercase text-cream opacity-85">"// наука"</span>
         </div>
     }
 }

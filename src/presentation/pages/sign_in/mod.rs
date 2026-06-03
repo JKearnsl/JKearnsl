@@ -42,10 +42,11 @@ pub fn Page() -> impl IntoView {
         <Title text="Войти"/>
         <main class="page min-h-[calc(100vh-72px)] flex items-center justify-center px-6 py-[60px]">
             <div class="w-full max-w-[460px]">
-                <div class="sign-in-card">
-                    <div class="sign-in-card-deco"/>
+                <div class="bg-paper border border-[var(--line)] rounded-[var(--radius)] pt-[52px] px-[44px] pb-[48px] max-[520px]:pt-[40px] max-[520px]:px-[28px] max-[520px]:pb-[36px] relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-[3px] [background:linear-gradient(to_bottom,var(--terracotta),var(--ochre))] [border-radius:var(--radius)_0_0_var(--radius)]"/>
+                    <div class="absolute -right-px -top-px w-[120px] h-[120px] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:18px_18px] [clip-path:polygon(100%_0,100%_100%,0_0)] opacity-70 pointer-events-none"/>
                     <div class="type-eyebrow mb-5 flex items-center gap-3">
-                        <span class="eyebrow-line text-terracotta w-[28px]"/>
+                        <span class="inline-block w-[28px] h-px bg-current text-terracotta"/>
                         "// /sign-in"
                     </div>
                     <Suspense fallback=move || view! {

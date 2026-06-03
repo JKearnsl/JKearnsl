@@ -23,7 +23,7 @@ pub fn Page() -> impl IntoView {
             <section class="pt-[56px] pb-7">
                 <div class="wrap">
                     <div class="type-eyebrow flex items-center gap-3">
-                        <span class="eyebrow-line"/>
+                        <span class="inline-block w-[36px] h-px bg-current"/>
                         "галерея"
                     </div>
                     <div class="flex justify-between items-end gap-6 flex-wrap mt-[18px]">
@@ -57,7 +57,7 @@ pub fn Page() -> impl IntoView {
 
             <section class="pt-2 pb-[88px]">
                 <div class="wrap">
-                    <div class="gal-cols">
+                    <div class="columns-3 [column-gap:18px] max-[900px]:columns-2 max-[560px]:columns-1">
                         {move || {
                             let current = GAL_CATS.iter().find(|c| c.id == cat.get()).unwrap();
                             (0..current.count).map(|i| {
@@ -129,9 +129,9 @@ fn ImageSlot(
 
     view! {
         <div
-            class="gal-slot card"
+            class=move || format!("group relative w-full border {} bg-cream-2 overflow-hidden cursor-pointer mb-[18px] break-inside-avoid",
+                if over.get() { "border-terracotta outline outline-2 outline-terracotta [outline-offset:-4px]" } else { "border-ink" })
             style=format!("aspect-ratio:{}", ar)
-            class:slot-over=move || over.get()
             on:dragover=move |ev| { ev.prevent_default(); over.set(true); }
             on:dragleave=move |_| over.set(false)
             on:drop=move |_ev| { over.set(false); }
@@ -140,13 +140,13 @@ fn ImageSlot(
                 view! {
                     <div class="absolute inset-0">
                         <img src=data alt="" class="absolute inset-0 w-full h-full object-cover block"/>
-                        <button class="slot-clear" on:click=clear_src.clone()>"×"</button>
+                        <button class="absolute top-[8px] right-[8px] size-[28px] rounded-full bg-[color-mix(in_oklab,var(--ink)_78%,transparent)] text-cream inline-flex items-center justify-center text-[14px] leading-none opacity-0 transition-opacity duration-[180ms] ease group-hover:opacity-100" on:click=clear_src.clone()>"×"</button>
                     </div>
                 }.into_any()
             } else {
                 view! {
                     <div class="absolute inset-0">
-                        <div class="slot-hatching"/>
+                        <div class="absolute inset-0 [background-image:repeating-linear-gradient(45deg,var(--line)_0_1px,transparent_1px_11px)] opacity-90"/>
                         <span class="absolute left-3 top-3 size-[9px] rounded-full" style=format!("background:{}", color)/>
                         <div class="absolute left-0 right-0 bottom-0 py-3 px-[14px] flex justify-between items-end gap-2 font-mono text-[11px] tracking-[.04em] uppercase text-muted">
                             <span class="type-mono muted">{hint}" · "{cap_clone.clone()}</span>

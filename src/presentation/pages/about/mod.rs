@@ -16,7 +16,7 @@ pub fn Page() -> impl IntoView {
             <section class="pt-[56px] pb-[40px]">
                 <div class="wrap">
                     <div class="type-eyebrow flex items-center gap-[14px] mb-5">
-                        <span class="eyebrow-line"/>
+                        <span class="inline-block w-[36px] h-px bg-current"/>
                         "// /about"
                     </div>
                     <div class="grid grid-cols-[1.4fr_1fr] gap-[64px] items-start max-[900px]:grid-cols-1">
