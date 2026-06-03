@@ -26,7 +26,6 @@ pub trait UserGateway: UserReader + UserWriter + UserRemover {}
 
 #[cfg(test)]
 pub mod test {
-    use async_trait::async_trait;
     use tokio::sync::Mutex;
     use super::*;
 
@@ -42,7 +41,6 @@ pub mod test {
         }
     }
 
-    #[async_trait]
     impl UserReader for MockUserGateway {
         async fn get_by_username(&self, username: &str) -> Option<User> {
             self.users.lock().await.iter().find(|u| u.username == *username).map(|u| u.clone())
@@ -53,20 +51,17 @@ pub mod test {
         }
     }
 
-    #[async_trait]
     impl UserWriter for MockUserGateway {
         async fn save(&self, user: &User) {
             self.users.lock().await.push(user.clone());
         }
     }
 
-    #[async_trait]
     impl UserRemover for MockUserGateway {
         async fn remove(&self, user_id: &UserId) {
             self.users.lock().await.retain(|u| u.id != *user_id);
         }
     }
 
-    #[async_trait]
     impl UserGateway for MockUserGateway {}
 }

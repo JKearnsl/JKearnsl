@@ -87,7 +87,7 @@ pub mod test {
         async fn range_by_category(&self, category: &str, limit: &u64, offset: &u64) -> Vec<NoteListItem> {
             use crate::domain::models::note::State;
             self.notes.lock().await.values()
-                .filter(|n| n.category == category && n.state == State::Published)
+                .filter(|n| n.category.as_str() == category && n.state == State::Published)
                 .skip(*offset as usize)
                 .take(*limit as usize)
                 .cloned()
