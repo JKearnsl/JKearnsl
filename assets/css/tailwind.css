@@ -140,18 +140,6 @@
   .wipe.in  { animation: wipeIn  .45s cubic-bezier(.7,0,.3,1) forwards; }
   .wipe.out { animation: wipeOut .45s cubic-bezier(.7,0,.3,1) forwards; }
 
-  /* ── Header theme toggle ── */
-  .theme-toggle {
-    width: 54px; height: 30px; border-radius: 999px;
-    border: 1px solid var(--line); background: var(--paper);
-    position: relative; cursor: pointer; transition: background .25s ease;
-  }
-  .theme-toggle .knob {
-    position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%;
-    background: var(--terracotta);
-    transition: transform .3s cubic-bezier(.2,.7,.2,1), background .25s ease;
-  }
-  [data-theme="dark"] .theme-toggle .knob { transform: translateX(24px); background: var(--ochre); }
 
   /* ── Note cover ── */
   .cover-meta {

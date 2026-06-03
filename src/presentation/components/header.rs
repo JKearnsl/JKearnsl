@@ -52,8 +52,8 @@ pub fn Header(theme: RwSignal<String>) -> impl IntoView {
                         <span class="font-mono text-[11px] py-[2px] px-[6px] border border-[var(--line)] rounded-[5px] bg-paper">"⌘ K"</span>
                         " поиск"
                     </span>
-                    <button class="theme-toggle" on:click=toggle_theme aria-label="toggle theme">
-                        <div class="knob"/>
+                    <button class="w-[54px] h-[30px] rounded-full border border-[var(--line)] bg-paper relative cursor-pointer [transition:background-color_.25s_ease]" on:click=toggle_theme aria-label="toggle theme">
+                        <div class="absolute top-[3px] left-[3px] w-[22px] h-[22px] rounded-full bg-terracotta dark:translate-x-[24px] dark:bg-ochre [transition:translate_.3s_cubic-bezier(.2,.7,.2,1),background-color_.25s_ease]"/>
                     </button>
                 </div>
             </div>
