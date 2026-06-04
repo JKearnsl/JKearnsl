@@ -2,9 +2,9 @@ use async_trait::async_trait;
 use crate::domain::models::hash::Hash;
 
 #[async_trait]
-pub trait Hasher {
-    async fn hash(&self, value: &str) -> Hash;
-    async fn verify(&self, value: &str, hash: &Hash) -> bool;
+pub trait Hasher: Send + Sync {
+    async fn hash(&self, bytes: &[u8]) -> Hash;
+    async fn verify(&self, bytes: &[u8], hash: &[u8]) -> bool;
 }
 
 
@@ -16,16 +16,12 @@ pub mod test {
 
     #[async_trait]
     impl Hasher for MockHasher {
-        async fn hash(&self, value: &str) -> Hash {
-            let mut data = [0; Hash::SIZE];
-            let bytes = value.as_bytes();
-            let len = bytes.len().min(Hash::SIZE);
-            data[..len].copy_from_slice(&bytes[..len]);
-            Hash(data)
+        async fn hash(&self, bytes: &[u8]) -> Hash {
+            Hash(bytes.to_vec())
         }
 
-        async fn verify(&self, value: &str, hash: &Hash) -> bool {
-            self.hash(value).await == *hash
+        async fn verify(&self, bytes: &[u8], hash: &[u8]) -> bool {
+            bytes == hash
         }
     }
 }

@@ -1,0 +1,13 @@
+use pulldown_cmark::{html, Options, Parser};
+
+pub fn render_markdown(src: &str) -> String {
+    let mut opts = Options::empty();
+    opts.insert(Options::ENABLE_TABLES);
+    opts.insert(Options::ENABLE_STRIKETHROUGH);
+    opts.insert(Options::ENABLE_TASKLISTS);
+    opts.insert(Options::ENABLE_FOOTNOTES);
+    let parser = Parser::new_ext(src, opts);
+    let mut out = String::new();
+    html::push_html(&mut out, parser);
+    out
+}

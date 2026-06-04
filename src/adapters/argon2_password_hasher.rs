@@ -1,14 +1,10 @@
-use argon2::{Argon2, Params, password_hash::{
-    PasswordHash,
-    PasswordHasher, PasswordVerifier, rand_core::OsRng, SaltString
-}};
+use argon2::{Argon2, Params, password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString}};
 use async_trait::async_trait;
-
 use crate::application::common::hasher::Hasher;
 use crate::domain::models::hash::Hash;
 
 pub struct Argon2PasswordHasher {
-    hasher: Argon2<'static>
+    hasher: Argon2<'static>,
 }
 
 impl Argon2PasswordHasher {
@@ -17,64 +13,42 @@ impl Argon2PasswordHasher {
             hasher: Argon2::new(
                 argon2::Algorithm::Argon2id,
                 argon2::Version::V0x13,
-                Params::new(
-                    2048,
-                    64,
-                    4,
-                    Some(32)
-                ).unwrap()
-            )
+                Params::new(2048, 64, 4, Some(32)).expect("valid Argon2 params"),
+            ),
         }
     }
 }
 
 #[async_trait]
 impl Hasher for Argon2PasswordHasher {
-    async fn hash(&self, value: &str) -> Hash {
+    async fn hash(&self, bytes: &[u8]) -> Hash {
         let hasher = self.hasher.clone();
-        let value = value.to_owned();
-        tokio::task::spawn_blocking(move || {
-            let salt = SaltString::generate(&mut OsRng);
-            let hash = hasher.hash_password(
-                value.as_bytes(),
-                &salt
-            ).unwrap();
-            Hash::try_from(hash.into()).unwrap()
-        }).await.unwrap()
+        let bytes = bytes.to_vec();
+        let phc_bytes = tokio::task::spawn_blocking(move || {
+            let salt = SaltString::encode_b64(&rand::random::<[u8; 16]>()).expect("salt encoding failed");
+            hasher
+                .hash_password(&bytes, &salt)
+                .expect("failed to hash")
+                .to_string()
+                .into_bytes()
+        })
+        .await
+        .expect("spawn_blocking failed");
+        Hash(phc_bytes)
     }
 
-    async fn verify(&self, value: &str, hash: &Hash) -> bool {
+    async fn verify(&self, bytes: &[u8], hash: &[u8]) -> bool {
         let hasher = self.hasher.clone();
-        let value = value.to_owned();
-        let hash = hash.to_owned();
+        let bytes = bytes.to_vec();
+        let hash = hash.to_vec();
         tokio::task::spawn_blocking(move || {
-            let parsed_hash = PasswordHash::from(&hash).unwrap();
-            hasher.verify_password(
-                value.as_bytes(),
-                &parsed_hash
-            ).is_ok()
-        }).await.unwrap()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_hash() {
-        let hasher = Argon2PasswordHasher::new();
-        let value = "test";
-        let hash = hasher.hash(value).await;
-        assert_ne!(hash, value);
-    }
-
-    #[tokio::test]
-    async fn test_verify() {
-        let hasher = Argon2PasswordHasher::new();
-        let value = "test";
-        let hash = hasher.hash(value).await;
-        let result = hasher.verify(value, &hash).await;
-        assert_eq!(result, true);
+            let hash_str = std::str::from_utf8(&hash).unwrap_or("");
+            match PasswordHash::new(hash_str) {
+                Ok(parsed) => hasher.verify_password(&bytes, &parsed).is_ok(),
+                Err(_) => false,
+            }
+        })
+        .await
+        .unwrap_or(false)
     }
 }

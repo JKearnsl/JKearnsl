@@ -1,0 +1,255 @@
+use leptos::prelude::*;
+use crate::controller::web::pages::control::AdminView;
+use crate::domain::models::note::NoteListItem;
+use crate::controller::web::api;
+use crate::controller::web::components::ui::button::Button;
+use crate::controller::web::components::ui::checkbox::Checkbox;
+use crate::controller::web::components::ui::form_field::FormField;
+use crate::controller::web::components::ui::input::Input;
+use crate::controller::web::components::ui::select::{Select, SelectOption};
+use crate::controller::web::components::ui::tags_input::TagsInput;
+use crate::controller::web::components::ui::textarea::Textarea;
+
+#[component]
+pub fn Section(
+    note_id: String,
+    notes: Resource<Vec<NoteListItem>>,
+    view: RwSignal<AdminView>,
+) -> impl IntoView {
+    let note_id = StoredValue::new(note_id);
+
+    let note_res = Resource::new(
+        move || note_id.get_value(),
+        |id| async move { api::notes::get_for_edit(id).await.ok().flatten() },
+    );
+
+    view! {
+        <Suspense fallback=move || view! {
+            <div class="p-20 text-center text-muted type-mono">"// загрузка записи..."</div>
+        }>
+            {move || note_res.get().map(|maybe_note| match maybe_note {
+                None => view! {
+                    <div class="p-[60px] text-center text-muted type-mono">"// запись не найдена"</div>
+                }.into_any(),
+                Some(note) => view! {
+                    <EditForm note=note notes=notes.clone() view=view/>
+                }.into_any(),
+            })}
+        </Suspense>
+    }.into_any()
+}
+
+#[component]
+fn EditForm(
+    note: crate::domain::models::note::Note,
+    notes: Resource<Vec<crate::domain::models::note::NoteListItem>>,
+    view: RwSignal<AdminView>,
+) -> impl IntoView {
+    use crate::domain::models::note::State;
+
+    let note_id      = StoredValue::new(note.id.clone());
+    let title        = RwSignal::new(note.title.clone());
+    let description  = RwSignal::new(note.description.clone());
+    let body         = RwSignal::new(note.body.clone());
+    let category     = RwSignal::new(note.category.as_str().to_string());
+    let tags         = RwSignal::new(note.tags.clone());
+    let featured     = RwSignal::new(note.featured);
+    let publish      = RwSignal::new(note.state == State::Published);
+
+    let success: RwSignal<Option<String>> = RwSignal::new(None);
+
+    let update_action = Action::new(move |_: &()| {
+        let id_val          = note_id.get_value();
+        let title_val       = title.get();
+        let description_val = description.get();
+        let body_val        = body.get();
+        let category_val    = category.get();
+        let tags_val        = tags.get().join(", ");
+        let featured_val    = featured.get();
+        let publish_val     = publish.get();
+        async move {
+            api::notes::update(
+                id_val, title_val, description_val, body_val,
+                category_val, tags_val, featured_val, publish_val,
+            ).await
+        }
+    });
+
+    let result  = update_action.value();
+    let pending = update_action.pending();
+
+    Effect::new(move |_| {
+        if let Some(Ok(slug)) = result.get() {
+            success.set(Some(slug));
+            notes.refetch();
+        }
+    });
+
+    let on_submit = move |ev: leptos::ev::SubmitEvent| {
+        ev.prevent_default();
+        success.set(None);
+        update_action.dispatch(());
+    };
+
+    view! {
+        <div class="flex flex-col gap-6 max-w-[860px]">
+            <div class="mb-1">
+                <button
+                    class="font-mono text-[12px] tracking-[.06em] uppercase text-muted transition-colors hover:text-ink type-mono"
+                    on:click=move |_| view.set(AdminView::Overview)
+                >
+                    "← назад к списку"
+                </button>
+            </div>
+
+            {move || success.get().map(|slug| {
+                let href = format!("/posts/{}", slug);
+                view! {
+                    <div class="flex items-center gap-3 py-[13px] px-[18px] rounded-[var(--radius-sm)] bg-terracotta/10 border border-terracotta/25">
+                        <span class="size-2 rounded-full bg-terracotta shrink-0"/>
+                        <span class="type-mono-lg">"// сохранено · "
+                            <a href=href class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"открыть →"</a>
+                        </span>
+                    </div>
+                }
+            })}
+
+            <form class="flex flex-col gap-5" on:submit=on_submit>
+                <NoteFormFields
+                    title=title description=description body=body
+                    category=category tags=tags
+                    featured=featured publish=publish
+                />
+
+                {move || result.get().map(|r| match r {
+                    Err(e) => view! {
+                        <p class="font-mono text-[12px] text-rust py-[10px] px-[14px] bg-rust/8 rounded-[var(--radius-sm)] border-l-2 border-rust">{e.to_string()}</p>
+                    }.into_any(),
+                    Ok(_) => view! { <span/> }.into_any(),
+                })}
+
+                <div class="flex justify-end pt-2">
+                    <Button submit=true pending=pending>
+                        {move || if pending.get() { "Сохранение..." } else { "Сохранить изменения →" }}
+                    </Button>
+                </div>
+            </form>
+        </div>
+    }.into_any()
+}
+
+#[component]
+pub fn NoteFormFields(
+    title: RwSignal<String>,
+    description: RwSignal<String>,
+    body: RwSignal<String>,
+    category: RwSignal<String>,
+    tags: RwSignal<Vec<String>>,
+    featured: RwSignal<bool>,
+    publish: RwSignal<bool>,
+) -> impl IntoView {
+    view! {
+        <FormField label="Категория">
+            <Select value=category>
+                <SelectOption value="prog" selected=move || category.get() == "prog">"Программирование"</SelectOption>
+                <SelectOption value="math" selected=move || category.get() == "math">"Математика"</SelectOption>
+                <SelectOption value="science" selected=move || category.get() == "science">"Наука"</SelectOption>
+            </Select>
+        </FormField>
+
+        <FormField label="Заголовок">
+            <Input value=title placeholder="Заголовок публикации..." required=true class="bg-paper"/>
+        </FormField>
+
+        <FormField label="Краткое описание">
+            <Textarea
+                value=description
+                mono=false
+                attr:rows="3"
+                placeholder="Одно-два предложения о публикации..."
+            />
+        </FormField>
+
+        <BodyEditor body/>
+
+        <FormField label="Теги">
+            <TagsInput value=tags placeholder="rust, async, tokio"/>
+        </FormField>
+
+        <div class="flex gap-7 flex-wrap">
+            <label class="flex items-center gap-[9px] font-mono text-[12px] tracking-[.06em] uppercase text-muted cursor-pointer select-none">
+                <Checkbox value=featured/>
+                "Отметить как особую"
+            </label>
+            <label class="flex items-center gap-[9px] font-mono text-[12px] tracking-[.06em] uppercase text-muted cursor-pointer select-none">
+                <Checkbox value=publish/>
+                "Опубликовать"
+            </label>
+        </div>
+    }.into_any()
+}
+
+#[component]
+fn BodyEditor(body: RwSignal<String>) -> impl IntoView {
+    use crate::controller::web::markdown::render_markdown;
+
+    let preview_mode = RwSignal::new(false);
+
+    let preview_html = Memo::new(move |_| {
+        if preview_mode.get() {
+            render_markdown(&body.get())
+        } else {
+            String::new()
+        }
+    });
+
+    view! {
+        <div class="flex flex-col">
+            <div class="flex items-center justify-between py-[10px] px-[14px] bg-cream-2 border border-[var(--line)] border-b-0 rounded-t-[var(--radius-sm)]">
+                <span class="font-mono text-[11px] tracking-[.14em] uppercase text-muted">"Тело публикации"</span>
+                <div class="flex gap-1">
+                    <button
+                        type="button"
+                        class="font-mono text-[11px] tracking-[.06em] uppercase py-[5px] px-3 rounded-[6px] text-muted transition-colors hover:text-ink"
+                        class:bg-ink=move || !preview_mode.get()
+                        class:text-cream=move || !preview_mode.get()
+                        on:click=move |_| preview_mode.set(false)
+                    >
+                        "✏ Писать"
+                    </button>
+                    <button
+                        type="button"
+                        class="font-mono text-[11px] tracking-[.06em] uppercase py-[5px] px-3 rounded-[6px] text-muted transition-colors hover:text-ink"
+                        class:bg-ink=move || preview_mode.get()
+                        class:text-cream=move || preview_mode.get()
+                        on:click=move |_| preview_mode.set(true)
+                    >
+                        "◉ Превью"
+                    </button>
+                </div>
+            </div>
+
+            {move || if preview_mode.get() {
+                let html = preview_html.get();
+                view! {
+                    <div class="min-h-[360px] py-5 px-6 bg-paper border border-[var(--line)] rounded-b-[var(--radius-sm)] prose">
+                        {if html.is_empty() {
+                            view! { <span class="type-mono muted">"// пусто"</span> }.into_any()
+                        } else {
+                            view! { <div inner_html=html/> }.into_any()
+                        }}
+                    </div>
+                }.into_any()
+            } else {
+                view! {
+                    <Textarea
+                        value=body
+                        rounded=false
+                        class="min-h-[360px] py-4 px-[18px] rounded-b-[var(--radius-sm)] rounded-t-none"
+                        placeholder="# Заголовок\n\nТекст публикации в Markdown..."
+                    />
+                }.into_any()
+            }}
+        </div>
+    }.into_any()
+}

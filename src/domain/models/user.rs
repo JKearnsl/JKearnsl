@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use crate::domain::models::identifier::generate;
-use crate::domain::models::hash::Hash;
 
 pub type UserId = String;
 
@@ -12,15 +11,15 @@ pub const USERNAME_MAX: usize = 128;
 pub struct User {
     pub id: UserId,
     pub username: String,
-    pub password_hash: Hash
+    pub password_hash: String,
 }
 
 impl User {
-    pub fn new(username: String, password_hash: Hash) -> Self {
+    pub fn new(username: String, password_hash: String) -> Self {
         Self {
             id: generate(USER_ID_SIZE),
             username,
-            password_hash
+            password_hash,
         }
     }
 }

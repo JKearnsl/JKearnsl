@@ -6,36 +6,29 @@ use crate::application::common::interactor::Interactor;
 use crate::application::common::user_gateway::UserReader;
 use crate::domain::models::user::UserId;
 
-type UserListResult = Vec<UserListItem>;
-
 #[derive(Debug, Serialize)]
-pub struct UserListItem{
+pub struct UserListItem {
     pub id: UserId,
-    pub username: String
+    pub username: String,
 }
 
-
-pub struct GetUserList<'interactor_life> {
+pub struct GetUserList<'a> {
     pub id_provider: Box<dyn IdProvider>,
-    pub user_reader: &'interactor_life dyn UserReader
+    pub user_reader: &'a dyn UserReader,
 }
 
 #[async_trait]
-impl Interactor<(), UserListResult> for GetUserList<'_> {
-    async fn execute(&self, _data: ()) -> Result<UserListResult, ApplicationError> {
-
+impl Interactor<(), Vec<UserListItem>> for GetUserList<'_> {
+    async fn execute(&self, _data: ()) -> Result<Vec<UserListItem>, ApplicationError> {
         if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);
         }
-        
+
         // This might not be the best strategy, but I won't have many users
         // other than me and a couple of bots
         let users = self.user_reader.get_all().await;
-        
-        Ok(users.into_iter().map(|u| UserListItem {
-            id: u.id,
-            username: u.username
-        }).collect())
+
+        Ok(users.into_iter().map(|u| UserListItem { id: u.id, username: u.username }).collect())
     }
 }
 
@@ -53,25 +46,19 @@ mod test {
     async fn test_get_user_list() {
         let id_provider = MockIdProvider {
             session: None,
+            user_id: Some("test_id".to_string()),
             is_auth: true,
-            username: Some("test".parse().unwrap())
-        };
-        
-        let user_gateway = MockUserGateway {
-            users: Mutex::new(vec![
-                User::create(
-                    "user".to_string(),
-                    MockHasher.hash("password")
-                ).unwrap()
-            ])
+            username: Some("test".to_string()),
         };
 
-        let interactor = GetUserList {
-            id_provider: Box::new(id_provider),
-            user_reader: &user_gateway
-        };
+        let hash = MockHasher.hash("password".as_bytes()).await;
+        let password_hash = String::from_utf8(hash.0).expect("MockHasher returns valid UTF-8");
+        let user = User::new("user".to_string(), password_hash);
+        let user_gateway = MockUserGateway { users: Mutex::new(vec![user]) };
 
-        let result = interactor.execute(()).await.unwrap();
+        let result = GetUserList { id_provider: Box::new(id_provider), user_reader: &user_gateway }
+            .execute(()).await.expect("get user list should succeed");
+
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].username, "user");
     }

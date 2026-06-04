@@ -1,45 +1,43 @@
+use async_trait::async_trait;
 use crate::application::common::exceptions::ApplicationError;
 use crate::application::common::hasher::Hasher;
 use crate::application::common::id_provider::IdProvider;
 use crate::application::common::interactor::Interactor;
+use crate::application::common::session_gateway::SessionWriter;
 use crate::application::common::user_gateway::UserReader;
-use crate::domain::models::hash::Hash;
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
-pub struct CreateSessionRequest {
+pub struct Input {
     pub username: String,
-    pub password_hash: Hash,
+    pub password: String,
 }
 
 pub struct CreateSession<'a> {
     pub id_provider: Box<dyn IdProvider>,
     pub user_reader: &'a dyn UserReader,
+    pub hasher: &'a dyn Hasher,
+    pub session_writer: &'a dyn SessionWriter,
 }
 
 #[async_trait]
-impl Interactor<CreateSessionRequest, ()> for CreateSession<'_> {
-    async fn execute(
-        &self,
-        data: CreateSessionRequest
-    ) -> Result<(), ApplicationError> {
-
-        if *self.id_provider.is_auth() {
-            return Err(ApplicationError::Forbidden)
+impl Interactor<Input, [u8; 32]> for CreateSession<'_> {
+    async fn execute(&self, data: Input) -> Result<[u8; 32], ApplicationError> {
+        if self.id_provider.is_auth() {
+            return Err(ApplicationError::Forbidden);
         }
 
-        let user = self.user_reader.get_by_username(&data.username).await;
-        
-        if user.is_none() {
-            return Err(ApplicationError::Unauthorized)
+        let user = self.user_reader
+            .get_by_username(&data.username)
+            .await
+            .ok_or(ApplicationError::Unauthorized)?;
+
+        if !self.hasher.verify(data.password.as_bytes(), user.password_hash.as_bytes()).await {
+            return Err(ApplicationError::Unauthorized);
         }
 
-        if user.unwrap().password_hash != data.password_hash {
-            return Err(ApplicationError::Unauthorized)
-        }
+        let token: [u8; 32] = rand::random();
+        self.session_writer.save(&token, &user.id).await;
 
-        Ok(())
+        Ok(token)
     }
 }
 
@@ -50,34 +48,76 @@ mod tests {
     use crate::application::common::id_provider::test::MockIdProvider;
     use crate::application::common::user_gateway::test::MockUserGateway;
     use crate::domain::models::user::User;
+    use async_trait::async_trait;
+    use crate::domain::models::user::UserId;
+
+    struct MockSessionWriter;
+
+    #[async_trait]
+    impl SessionWriter for MockSessionWriter {
+        async fn save(&self, _raw_token: &[u8; 32], _user_id: &UserId) {}
+    }
 
     #[tokio::test]
-    async fn test_create_session() {
-        let id_provider = Box::new(MockIdProvider {
-            is_auth: false,
-            session: None,
-            username: None
-        });
-
+    async fn test_create_session_ok() {
+        let hasher = MockHasher;
+        let id_provider = Box::new(MockIdProvider { is_auth: false, session: None, user_id: None, username: None });
         let user_reader = MockUserGateway::new(vec![
-            User::create(
-                "test".to_string(),
-                MockHasher.hash("password")
-            ).unwrap()
+            User::new("test".to_string(), "password".to_string()),
         ]);
 
-        let create_session = CreateSession {
+        let result = CreateSession {
             id_provider,
-            user_reader: &user_reader
-        };
+            user_reader: &user_reader,
+            hasher: &hasher,
+            session_writer: &MockSessionWriter,
+        }
+        .execute(Input { username: "test".to_string(), password: "password".to_string() })
+        .await;
 
-        let create_session_dto = CreateSessionRequest {
-            username: "jkearnsl".to_string(),
-            password_hash: MockHasher.hash("password")
-        };
-
-        let result = create_session.execute(create_session_dto).await;
         assert!(result.is_ok());
-        assert_eq!(user_reader.users.lock().await.len(), 2);
+    }
+
+    #[tokio::test]
+    async fn test_create_session_wrong_password() {
+        let hasher = MockHasher;
+        let id_provider = Box::new(MockIdProvider { is_auth: false, session: None, user_id: None, username: None });
+        let user_reader = MockUserGateway::new(vec![
+            User::new("test".to_string(), "password".to_string()),
+        ]);
+
+        let result = CreateSession {
+            id_provider,
+            user_reader: &user_reader,
+            hasher: &hasher,
+            session_writer: &MockSessionWriter,
+        }
+        .execute(Input { username: "test".to_string(), password: "wrong".to_string() })
+        .await;
+
+        assert!(matches!(result, Err(ApplicationError::Unauthorized)));
+    }
+
+    #[tokio::test]
+    async fn test_create_session_already_auth() {
+        let hasher = MockHasher;
+        let id_provider = Box::new(MockIdProvider {
+            is_auth: true,
+            session: Some("token".to_string()),
+            user_id: Some("test_id".to_string()),
+            username: Some("test".to_string()),
+        });
+        let user_reader = MockUserGateway::new(vec![]);
+
+        let result = CreateSession {
+            id_provider,
+            user_reader: &user_reader,
+            hasher: &hasher,
+            session_writer: &MockSessionWriter,
+        }
+        .execute(Input { username: "test".to_string(), password: "password".to_string() })
+        .await;
+
+        assert!(matches!(result, Err(ApplicationError::Forbidden)));
     }
 }

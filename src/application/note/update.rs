@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
-pub struct UpdateNoteRequest {
+pub struct Input {
     pub id: NoteId,
     pub title: String,
     pub description: String,
@@ -21,7 +21,7 @@ pub struct UpdateNoteRequest {
 }
 
 #[derive(Debug, Serialize)]
-pub struct UpdateNoteResult {
+pub struct Output {
     pub slug: String,
 }
 
@@ -32,8 +32,8 @@ pub struct UpdateNote<'a> {
 }
 
 #[async_trait]
-impl Interactor<UpdateNoteRequest, UpdateNoteResult> for UpdateNote<'_> {
-    async fn execute(&self, data: UpdateNoteRequest) -> Result<UpdateNoteResult, ApplicationError> {
+impl Interactor<Input, Output> for UpdateNote<'_> {
+    async fn execute(&self, data: Input) -> Result<Output, ApplicationError> {
         if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);
         }
@@ -67,6 +67,6 @@ impl Interactor<UpdateNoteRequest, UpdateNoteResult> for UpdateNote<'_> {
 
         self.note_writer.save(&note).await;
 
-        Ok(UpdateNoteResult { slug: note.slug })
+        Ok(Output { slug: note.slug })
     }
 }

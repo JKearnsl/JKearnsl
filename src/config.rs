@@ -26,7 +26,7 @@ pub struct Config {
 impl Config {
     pub fn from_env() -> Self {
         let host = std::env::var("HOST").unwrap_or_else(|_| "localhost".to_string());
-        let port = std::env::var("PORT").unwrap_or_else(|_| 8080.to_string()).parse().unwrap();
+        let port = std::env::var("PORT").unwrap_or_else(|_| 8080.to_string()).parse().expect("PORT must be a valid number");
         
         let workers = match thread::available_parallelism() {
             Ok(parallelism) => usize::from(parallelism),

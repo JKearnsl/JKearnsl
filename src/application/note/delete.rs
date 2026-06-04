@@ -7,7 +7,7 @@ use async_trait::async_trait;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
-pub struct DeleteNoteRequest {
+pub struct Input {
     pub id: NoteId,
 }
 
@@ -17,8 +17,8 @@ pub struct DeleteNote<'a> {
 }
 
 #[async_trait]
-impl Interactor<DeleteNoteRequest, ()> for DeleteNote<'_> {
-    async fn execute(&self, data: DeleteNoteRequest) -> Result<(), ApplicationError> {
+impl Interactor<Input, ()> for DeleteNote<'_> {
+    async fn execute(&self, data: Input) -> Result<(), ApplicationError> {
         if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);
         }

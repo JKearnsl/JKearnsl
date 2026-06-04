@@ -1,5 +1,6 @@
 pub mod models;
 pub mod pool;
 pub mod note;
-pub mod initial;
-pub mod user_verifier;
+pub mod session;
+pub mod user;
+pub mod project;

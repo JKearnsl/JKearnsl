@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
-pub struct CreateNoteRequest {
+pub struct Input {
     pub title: String,
     pub description: String,
     pub body: String,
@@ -19,7 +19,7 @@ pub struct CreateNoteRequest {
 }
 
 #[derive(Debug, Serialize)]
-pub struct CreateNoteResult {
+pub struct Output {
     pub id: NoteId,
     pub slug: String,
     pub title: String,
@@ -32,8 +32,8 @@ pub struct CreateNote<'a> {
 }
 
 #[async_trait]
-impl Interactor<CreateNoteRequest, CreateNoteResult> for CreateNote<'_> {
-    async fn execute(&self, data: CreateNoteRequest) -> Result<CreateNoteResult, ApplicationError> {
+impl Interactor<Input, Output> for CreateNote<'_> {
+    async fn execute(&self, data: Input) -> Result<Output, ApplicationError> {
         if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);
         }
@@ -70,10 +70,6 @@ impl Interactor<CreateNoteRequest, CreateNoteResult> for CreateNote<'_> {
 
         self.note_writer.save(&note).await;
 
-        Ok(CreateNoteResult {
-            id: note.id,
-            slug: note.slug,
-            title: note.title,
-        })
+        Ok(Output { id: note.id, slug: note.slug, title: note.title })
     }
 }

@@ -18,64 +18,37 @@ async fn main() {
     use actix_web::http::header::{self, HeaderValue};
     use actix_web::middleware::{Compress, DefaultHeaders, NormalizePath};
     use actix_web::middleware::Logger;
-    use sqlx::sqlite::{
-        SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous,
-    };
-    use std::str::FromStr;
     use jkearnsl::adapters;
 
-    use leptos::prelude::*;
     use leptos::config::get_configuration;
     use leptos_actix::{generate_route_list, LeptosRoutes};
-    use leptos_meta::MetaTags;
+    use jkearnsl::controller::web::app::App;
 
-    use jkearnsl::presentation::app::App;
-
-    use adapters::database::initial::initial_models;
-    use adapters::database::user_verifier::SqliteUserVerifier;
+    use adapters::database::pool::create_pool;
+    use adapters::database::user::SqliteUserGateway;
+    use adapters::database::session::SqliteSessionGateway;
     use adapters::auth::token::TokenProcessor;
+    use jkearnsl::controller::default_user;
+    use jkearnsl::controller::session_vacuum;
     use jkearnsl::ioc::IoC;
 
     let config = config::Config::from_env();
     pretty_env_logger::init_custom_env("LOG_LEVEL");
 
-    let connect_options = SqliteConnectOptions::from_str("sqlite://database?mode=rwc")
-        .unwrap_or_else(|e| {
-            log::error!("Invalid database URL: {}", e);
-            std::process::exit(1);
-        })
-        .foreign_keys(true)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Normal)
-        .busy_timeout(Duration::from_secs(30))
-        // 64 MB page cache (negative = kibibytes)
-        .pragma("cache_size", "-65536")
-        // 256 MB memory-mapped I/O — reduces syscalls on reads
-        .pragma("mmap_size", "268435456")
-        .pragma("temp_store", "memory");
+    let db_pool = create_pool(config.workers).await;
 
-    let pool_size = (config.workers * 2).max(10) as u32;
-    let db_pool = SqlitePoolOptions::new()
-        .max_connections(pool_size)
-        .min_connections(config.workers.min(4) as u32)
-        .acquire_timeout(Duration::from_secs(10))
-        .idle_timeout(Duration::from_secs(600))
-        .connect_with(connect_options)
-        .await
-        .unwrap_or_else(|e| {
-            log::error!("Failed to connect to database: {}", e);
-            std::process::exit(1);
-        });
+    default_user::run(&db_pool).await;
 
-    initial_models(&db_pool).await.unwrap_or_else(|e| {
-        log::error!("Failed to initialize models: {}", e);
-        std::process::exit(1);
-    });
+    tokio::spawn(session_vacuum::run(
+        db_pool.clone(),
+        Duration::from_secs(60 * 60),
+    ));
 
-    let user_verifier = web::Data::new(SqliteUserVerifier::new(db_pool.clone()));
-    let token_processor = web::Data::new(TokenProcessor::new());
+    let user_gateway = web::Data::new(SqliteUserGateway::new(db_pool.clone()));
+    let session_gateway = web::Data::new(SqliteSessionGateway::new(db_pool.clone()));
+    let token_processor = web::Data::new(TokenProcessor::new(db_pool.clone()));
     let ioc = Arc::new(IoC::new(db_pool));
-    let conf = get_configuration(None).unwrap();
+    let conf = get_configuration(None).expect("leptos configuration required");
     let site_addr = conf.leptos_options.site_addr;
     let has_tls = config.tls.is_some();
 
@@ -111,7 +84,8 @@ async fn main() {
             )
             .app_data(web::Data::new(leptos_options.to_owned()))
             .app_data(ioc_data)
-            .app_data(user_verifier.clone())
+            .app_data(user_gateway.clone())
+            .app_data(session_gateway.clone())
             .app_data(token_processor.clone())
             .wrap(Logger::default())
             .wrap(Compress::default())
@@ -140,30 +114,11 @@ async fn main() {
             })
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
-                move || {
-                    view! {
-                        <!DOCTYPE html>
-                        <html lang="ru">
-                            <head>
-                                <meta charset="utf-8"/>
-                                <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                                <script>
-                                    r#"(function(){try{var t=localStorage.getItem('jk-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();"#
-                                </script>
-                                <AutoReload options=leptos_options.clone() />
-                                <HydrationScripts options=leptos_options.clone()/>
-                                <MetaTags/>
-                            </head>
-                            <body>
-                                <App/>
-                            </body>
-                        </html>
-                    }
-                }
+                move || jkearnsl::controller::web::index::shell(leptos_options.clone())
             })
     };
 
-    let tcp_listener = TcpListener::bind(site_addr).unwrap();
+    let tcp_listener = TcpListener::bind(site_addr).expect("failed to bind TCP listener");
 
     let mut server = HttpServer::new(app_builder)
         .workers(config.workers)
@@ -172,7 +127,7 @@ async fn main() {
         .backlog(2048);
 
     if let Some(tls) = config.tls {
-        rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
+        rustls::crypto::aws_lc_rs::default_provider().install_default().expect("failed to install TLS crypto provider");
 
         let mut key_file = BufReader::new(File::open(&tls.key).unwrap_or_else(|e| {
             log::error!("Failed to open TLS key: {}", e);
@@ -185,23 +140,23 @@ async fn main() {
 
         let tls_certs = rustls_pemfile::certs(&mut certs_file)
             .collect::<Result<Vec<_>, _>>()
-            .unwrap();
+            .expect("failed to parse TLS certificates");
         let tls_key = rustls_pemfile::pkcs8_private_keys(&mut key_file)
             .next()
-            .unwrap()
-            .unwrap();
+            .expect("no TLS private key found")
+            .expect("failed to parse TLS private key");
 
         let mut tls_config = rustls::ServerConfig::builder()
             .with_no_client_auth()
             .with_single_cert(tls_certs, rustls::pki_types::PrivateKeyDer::Pkcs8(tls_key))
-            .unwrap();
+            .expect("failed to configure TLS");
         // Явный ALPN: браузеры увидят h2 и договорятся на HTTP/2 по TLS
         tls_config.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
 
-        server = server.listen_rustls_0_23(tcp_listener, tls_config).unwrap();
+        server = server.listen_rustls_0_23(tcp_listener, tls_config).expect("failed to bind TLS listener");
     } else {
-        server = server.listen(tcp_listener).unwrap();
+        server = server.listen(tcp_listener).expect("failed to bind listener");
     }
 
-    server.run().await.unwrap();
+    server.run().await.expect("server failed");
 }

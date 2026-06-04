@@ -1,8 +1,6 @@
 .idea/
 target/
 Cargo.lock
-database
-database-*
-.ai
-# Node (Tailwind CSS)
+/database
+/database-*
 node_modules/

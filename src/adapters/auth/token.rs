@@ -1,30 +1,23 @@
-use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
-use rand::random;
+use sha2::Digest;
+use sqlx::Row;
 use crate::application::common::id_provider::IdProvider;
+use crate::domain::models::user::UserId;
 
 pub struct IdTokenProvider {
     token: Option<String>,
+    user_id: Option<UserId>,
     username: Option<String>,
     is_auth: bool,
 }
 
 impl IdTokenProvider {
-    pub fn new(token: Option<String>, token_processor: &TokenProcessor) -> Result<Self, String> {
+    pub async fn new(token: Option<String>, token_processor: &TokenProcessor) -> Self {
         match token {
-            Some(token) => {
-                let username = token_processor.get_token_session(&token)?;
-                Ok(Self {
-                    token: Some(token),
-                    username: Some(username),
-                    is_auth: true,
-                })
-            }
-            None => Ok(Self {
-                token: None,
-                username: None,
-                is_auth: false,
-            }),
+            Some(token) => match token_processor.get_token_session(&token).await {
+                Some((user_id, username)) => Self { token: Some(token), user_id: Some(user_id), username: Some(username), is_auth: true },
+                None => Self { token: None, user_id: None, username: None, is_auth: false },
+            },
+            None => Self { token: None, user_id: None, username: None, is_auth: false },
         }
     }
 
@@ -34,45 +27,55 @@ impl IdTokenProvider {
 }
 
 impl IdProvider for IdTokenProvider {
-    fn session(&self) -> Option<&String> {
-        self.token.as_ref()
-    }
-
-    fn username(&self) -> Option<&String> {
-        self.username.as_ref()
-    }
-
-    fn is_auth(&self) -> bool {
-        self.is_auth
-    }
+    fn session(&self) -> Option<&String> { self.token.as_ref() }
+    fn user_id(&self) -> Option<&UserId> { self.user_id.as_ref() }
+    fn username(&self) -> Option<&String> { self.username.as_ref() }
+    fn is_auth(&self) -> bool { self.is_auth }
 }
 
 
 pub struct TokenProcessor {
-    data: Arc<RwLock<HashMap<String, String>>>,
+    pool: sqlx::SqlitePool,
 }
 
 impl TokenProcessor {
-    pub fn new() -> Self {
-        Self {
-            data: Arc::new(RwLock::new(HashMap::new())),
+    pub fn new(pool: sqlx::SqlitePool) -> Self {
+        Self { pool }
+    }
+
+    fn decode_hex(hex: &str) -> Option<[u8; 32]> {
+        if hex.len() != 64 { return None; }
+        let mut bytes = [0u8; 32];
+        for (i, chunk) in hex.as_bytes().chunks(2).enumerate() {
+            bytes[i] = u8::from_str_radix(std::str::from_utf8(chunk).ok()?, 16).ok()?;
         }
+        Some(bytes)
     }
 
-    pub fn set_token_session(&self, username: &str) -> String {
-        let token = (0..64).map(|_| format!("{:02x}", random::<u8>())).collect::<String>();
-        self.data.write().unwrap().insert(token.clone(), username.to_owned());
-        token
+    pub async fn get_token_session(&self, hex: &str) -> Option<(UserId, String)> {
+        let raw = Self::decode_hex(hex)?;
+        let hash: [u8; 32] = sha2::Sha256::digest(raw).into();
+        let row = sqlx::query(
+            "SELECT u.id, u.username FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.token_hash = ?"
+        )
+        .bind(hash.as_slice())
+        .fetch_optional(&self.pool)
+        .await
+        .ok()
+        .flatten()?;
+        let user_id: UserId = row.try_get("id").ok()?;
+        let username: String = row.try_get("username").ok()?;
+        Some((user_id, username))
     }
 
-    pub fn get_token_session(&self, token: &str) -> Result<String, String> {
-        self.data.read().unwrap()
-            .get(token)
-            .cloned()
-            .ok_or_else(|| "token not valid".to_string())
-    }
-
-    pub fn remove_token_session(&self, token: &str) {
-        self.data.write().unwrap().remove(token);
+    pub async fn remove_token_session(&self, hex: &str) {
+        if let Some(raw) = Self::decode_hex(hex) {
+            let hash: [u8; 32] = sha2::Sha256::digest(raw).into();
+            sqlx::query("DELETE FROM sessions WHERE token_hash = ?")
+                .bind(hash.as_slice())
+                .execute(&self.pool)
+                .await
+                .ok();
+        }
     }
 }

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 
@@ -14,7 +15,7 @@ fn format_map(errors: &HashMap<String, String>) -> String {
     format!("[{}]", formatted_entries.join(", "))
 }
 
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug, Clone, Serialize, Deserialize)]
 pub enum ApplicationError {
     #[error("NotFound")]
     NotFound,
