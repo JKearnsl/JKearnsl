@@ -9,7 +9,7 @@ pub fn FormField(
     view! {
         <div class="flex flex-col gap-2">
             <label
-                class="font-mono text-[11px] tracking-[.16em] uppercase text-muted"
+                class="font-mono text-[11px] tracking-[.16em] uppercase text-muted select-none"
                 for=label_for
             >
                 {label}
