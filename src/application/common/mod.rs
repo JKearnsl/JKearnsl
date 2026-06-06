@@ -1,4 +1,5 @@
 pub mod exceptions;
+#[cfg(feature = "ssr")]
 pub mod id_provider;
 
 #[cfg(feature = "ssr")]

@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use crate::domain::models::note::NoteListItem;
-use crate::controller::web::components::notes::note_card::NoteCard;
+use crate::controller::web::components::notes::card::Card;
 
 #[component]
 pub fn Grid(posts: Vec<NoteListItem>) -> impl IntoView {
@@ -14,7 +14,7 @@ pub fn Grid(posts: Vec<NoteListItem>) -> impl IntoView {
                         }.into_any()
                     } else {
                         posts.into_iter().map(|post| view! {
-                            <NoteCard post/>
+                            <Card post/>
                         }).collect_view().into_any()
                     }}
                 </div>

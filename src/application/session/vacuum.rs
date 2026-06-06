@@ -1,7 +1,9 @@
 use async_trait::async_trait;
-use crate::application::common::exceptions::ApplicationError;
-use crate::application::common::interactor::Interactor;
-use crate::application::common::session_gateway::SessionVacuum;
+use crate::application::common::{
+    exceptions::ApplicationError,
+    interactor::Interactor,
+    session_gateway::SessionVacuum,
+};
 
 pub struct VacuumSessions<'a> {
     pub session_vacuum: &'a dyn SessionVacuum,

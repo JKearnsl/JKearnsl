@@ -3,7 +3,7 @@ mod tabs;
 use leptos::prelude::*;
 use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
-use crate::controller::web::api;
+use crate::controller::web::lib::api;
 
 #[derive(Clone, PartialEq)]
 pub enum AdminView {

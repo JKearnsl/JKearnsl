@@ -31,30 +31,20 @@ pub async fn create(username: String, password: String) -> Result<(), Applicatio
     use leptos_actix::{extract, ResponseOptions};
     use actix_web::http::header;
     use crate::adapters::auth::token::{IdTokenProvider, TokenProcessor};
-    use crate::adapters::database::user::SqliteUserGateway;
-    use crate::adapters::database::session::SqliteSessionGateway;
-    use crate::adapters::argon2_password_hasher::Argon2PasswordHasher;
-    use crate::application::session::create::{CreateSession, Input};
+    use crate::interactor_factory::InteractorFactory;
+    use crate::application::session::create::Input;
     use crate::application::common::interactor::Interactor;
 
     let req: HttpRequest = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let user_gateway: Data<SqliteUserGateway> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let session_gateway: Data<SqliteSessionGateway> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
     let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
 
     let session_token = req.cookie("session").map(|c| c.value().to_owned());
     let id_provider = Box::new(IdTokenProvider::new(session_token, &token_processor).await);
 
-    let hasher = Argon2PasswordHasher::new();
-
-    let token = CreateSession {
-        id_provider,
-        user_reader: user_gateway.as_ref(),
-        hasher: &hasher,
-        session_writer: session_gateway.as_ref(),
-    }
-    .execute(Input { username, password })
-    .await?;
+    let token = ioc.create_session(id_provider)
+        .execute(Input { username, password })
+        .await?;
 
     let hex: String = token.iter().map(|b| format!("{:02x}", b)).collect();
 

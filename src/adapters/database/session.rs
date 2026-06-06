@@ -2,9 +2,11 @@ use async_trait::async_trait;
 use sha2::{Sha256, Digest};
 use sqlx::Row;
 use crate::application::common::session_gateway::{SessionGateway, SessionReader, SessionRemover, SessionVacuum, SessionWriter};
-use crate::domain::models::hash::Hash;
-use crate::domain::models::session::Session;
-use crate::domain::models::user::UserId;
+use crate::domain::models::{
+    hash::Hash,
+    session::Session,
+    user::UserId,
+};
 
 #[derive(Clone)]
 pub struct SqliteSessionGateway {

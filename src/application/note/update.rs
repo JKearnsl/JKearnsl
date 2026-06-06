@@ -1,7 +1,9 @@
-use crate::application::common::exceptions::ApplicationError;
-use crate::application::common::id_provider::IdProvider;
-use crate::application::common::interactor::Interactor;
-use crate::application::common::note_gateway::{NoteReader, NoteWriter};
+use crate::application::common::{
+    exceptions::ApplicationError,
+    id_provider::IdProvider,
+    interactor::Interactor,
+    note_gateway::{NoteReader, NoteWriter},
+};
 use crate::domain::models::note::{Category, NoteId, State, NOTE_BODY_MAX, NOTE_TITLE_MAX};
 use async_trait::async_trait;
 use chrono::Utc;

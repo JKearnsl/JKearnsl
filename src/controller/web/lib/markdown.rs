@@ -1,6 +1,6 @@
 use pulldown_cmark::{html, Options, Parser};
 
-pub fn render_markdown(src: &str) -> String {
+pub fn render(src: &str) -> String {
     let mut opts = Options::empty();
     opts.insert(Options::ENABLE_TABLES);
     opts.insert(Options::ENABLE_STRIKETHROUGH);

@@ -3,7 +3,7 @@ use crate::domain::models::note::NoteListItem;
 use crate::controller::web::components::notes::{category, format, cover};
 
 #[component]
-pub fn NoteCard(post: NoteListItem) -> impl IntoView {
+pub fn Card(post: NoteListItem) -> impl IntoView {
     let href = format!("/posts/{}", post.slug);
     let cat_label = category::label(&post.category);
     let cat_color = category::color(&post.category);

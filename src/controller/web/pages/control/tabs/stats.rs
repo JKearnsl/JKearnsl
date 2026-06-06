@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use crate::controller::web::pages::control::AdminView;
 use crate::domain::models::note::{Category, NoteListItem};
-use crate::controller::web::api;
+use crate::controller::web::lib::api;
 use crate::controller::web::components::notes::category;
 
 #[component]

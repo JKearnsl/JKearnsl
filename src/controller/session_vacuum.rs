@@ -1,8 +1,9 @@
 use std::time::Duration;
-use crate::adapters::database::pool::DbPool;
-use crate::adapters::database::session::SqliteSessionGateway;
-use crate::application::common::interactor::Interactor;
-use crate::application::session::vacuum::VacuumSessions;
+use crate::adapters::database::{pool::DbPool, session::SqliteSessionGateway};
+use crate::application::{
+    common::interactor::Interactor,
+    session::vacuum::VacuumSessions,
+};
 
 const SESSION_TTL_SECS: i64 = 60 * 60 * 24 * 7; // 7 days
 

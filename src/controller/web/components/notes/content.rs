@@ -1,10 +1,14 @@
 use leptos::prelude::*;
-use crate::controller::web::components::notes::{category, read_time, format, cover};
-use crate::controller::web::components::ui::badge::Badge;
-use crate::controller::web::components::ui::chip::{Chip, Tag, ChipRow};
+use crate::controller::web::components::{
+    notes::{category, read_time, format, cover},
+    ui::{
+        badge::Badge,
+        chip::{Chip, Tag, ChipRow},
+    },
+};
 
 #[component]
-pub fn NoteContent(post: crate::domain::models::note::Note) -> impl IntoView {
+pub fn Content(post: crate::domain::models::note::Note) -> impl IntoView {
     let progress = RwSignal::new(0.0_f64);
 
     Effect::new(move |_| {

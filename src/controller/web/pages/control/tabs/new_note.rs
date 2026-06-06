@@ -1,9 +1,11 @@
 use leptos::{component, view, IntoView};
 use leptos::prelude::*;
 use crate::domain::models::note::NoteListItem;
-use crate::controller::web::api;
-use crate::controller::web::pages::control::tabs::edit_note::NoteFormFields;
-use crate::controller::web::components::ui::button::Button;
+use crate::controller::web::lib::api;
+use crate::controller::web::components::{
+    notes::form::NoteFormFields,
+    ui::button::Button,
+};
 
 #[component]
 pub fn Section(

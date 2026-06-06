@@ -1,10 +1,14 @@
 use leptos::prelude::*;
 use crate::domain::models::note::NoteListItem;
-use crate::controller::web::components::notes::{category, format, cover};
-use crate::controller::web::components::ui::badge::Badge;
-use crate::controller::web::components::ui::button::{Button, Variant as BtnVariant};
-use crate::controller::web::components::ui::chip::{Tag, ChipRow};
-use crate::controller::web::components::ui::card::Card;
+use crate::controller::web::components::{
+    notes::{category, format, cover},
+    ui::{
+        badge::Badge,
+        button::{Button, Variant as BtnVariant},
+        card::Card,
+        chip::{Tag, ChipRow},
+    },
+};
 
 #[component]
 pub fn Editorial(notes: Resource<Vec<NoteListItem>>) -> impl IntoView {

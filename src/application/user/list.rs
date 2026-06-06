@@ -1,16 +1,11 @@
 use async_trait::async_trait;
-use serde::Serialize;
-use crate::application::common::exceptions::ApplicationError;
-use crate::application::common::id_provider::IdProvider;
-use crate::application::common::interactor::Interactor;
-use crate::application::common::user_gateway::UserReader;
-use crate::domain::models::user::UserId;
-
-#[derive(Debug, Serialize)]
-pub struct UserListItem {
-    pub id: UserId,
-    pub username: String,
-}
+use crate::application::common::{
+    exceptions::ApplicationError,
+    id_provider::IdProvider,
+    interactor::Interactor,
+    user_gateway::UserReader,
+};
+use crate::domain::models::user::UserSummary;
 
 pub struct GetUserList<'a> {
     pub id_provider: Box<dyn IdProvider>,
@@ -18,8 +13,8 @@ pub struct GetUserList<'a> {
 }
 
 #[async_trait]
-impl Interactor<(), Vec<UserListItem>> for GetUserList<'_> {
-    async fn execute(&self, _data: ()) -> Result<Vec<UserListItem>, ApplicationError> {
+impl Interactor<(), Vec<UserSummary>> for GetUserList<'_> {
+    async fn execute(&self, _data: ()) -> Result<Vec<UserSummary>, ApplicationError> {
         if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);
         }
@@ -28,17 +23,18 @@ impl Interactor<(), Vec<UserListItem>> for GetUserList<'_> {
         // other than me and a couple of bots
         let users = self.user_reader.get_all().await;
 
-        Ok(users.into_iter().map(|u| UserListItem { id: u.id, username: u.username }).collect())
+        Ok(users.into_iter().map(|u| UserSummary { id: u.id, username: u.username }).collect())
     }
 }
 
 #[cfg(test)]
 mod test {
     use tokio::sync::Mutex;
-    use crate::application::common::hasher::Hasher;
-    use crate::application::common::hasher::test::MockHasher;
-    use crate::application::common::id_provider::test::MockIdProvider;
-    use crate::application::common::user_gateway::test::MockUserGateway;
+    use crate::application::common::{
+        hasher::{Hasher, test::MockHasher},
+        id_provider::test::MockIdProvider,
+        user_gateway::test::MockUserGateway,
+    };
     use crate::domain::models::user::User;
     use super::*;
 

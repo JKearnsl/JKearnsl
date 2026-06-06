@@ -6,7 +6,7 @@ mod news_letter;
 mod post;
 
 use leptos::prelude::*;
-use crate::controller::web::api;
+use crate::controller::web::lib::api;
 
 #[component]
 pub fn Page() -> impl IntoView {

@@ -1,6 +1,7 @@
 pub mod category;
 pub mod cover;
 pub mod format;
-pub mod note_card;
-pub mod note_content;
-pub mod read_time;
+mod read_time;
+pub mod card;
+pub mod content;
+pub mod form;

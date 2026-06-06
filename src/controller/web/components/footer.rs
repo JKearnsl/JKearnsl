@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use crate::controller::web::api::users::get_self;
+use crate::controller::web::lib::api::users::get_self;
 
 
 #[component]

@@ -1,10 +1,12 @@
 use async_trait::async_trait;
-use crate::application::common::exceptions::ApplicationError;
-use crate::application::common::hasher::Hasher;
-use crate::application::common::id_provider::IdProvider;
-use crate::application::common::interactor::Interactor;
-use crate::application::common::session_gateway::SessionWriter;
-use crate::application::common::user_gateway::UserReader;
+use crate::application::common::{
+    exceptions::ApplicationError,
+    hasher::Hasher,
+    id_provider::IdProvider,
+    interactor::Interactor,
+    session_gateway::SessionWriter,
+    user_gateway::UserReader,
+};
 
 pub struct Input {
     pub username: String,
@@ -44,12 +46,13 @@ impl Interactor<Input, [u8; 32]> for CreateSession<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::application::common::hasher::test::MockHasher;
-    use crate::application::common::id_provider::test::MockIdProvider;
-    use crate::application::common::user_gateway::test::MockUserGateway;
-    use crate::domain::models::user::User;
     use async_trait::async_trait;
-    use crate::domain::models::user::UserId;
+    use crate::application::common::{
+        hasher::test::MockHasher,
+        id_provider::test::MockIdProvider,
+        user_gateway::test::MockUserGateway,
+    };
+    use crate::domain::models::user::{User, UserId};
 
     struct MockSessionWriter;
 

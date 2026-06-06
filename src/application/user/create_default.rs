@@ -1,6 +1,8 @@
-use crate::application::common::exceptions::ApplicationError;
-use crate::application::common::hasher::Hasher;
-use crate::application::common::user_gateway::{UserReader, UserWriter};
+use crate::application::common::{
+    exceptions::ApplicationError,
+    hasher::Hasher,
+    user_gateway::{UserReader, UserWriter},
+};
 use crate::domain::models::user::User;
 
 pub struct DefaultCredentials {

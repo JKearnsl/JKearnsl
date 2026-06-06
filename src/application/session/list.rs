@@ -1,10 +1,12 @@
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use serde::Serialize;
-use crate::application::common::exceptions::ApplicationError;
-use crate::application::common::id_provider::IdProvider;
-use crate::application::common::interactor::Interactor;
-use crate::application::common::session_gateway::SessionReader;
+use crate::application::common::{
+    exceptions::ApplicationError,
+    id_provider::IdProvider,
+    interactor::Interactor,
+    session_gateway::SessionReader,
+};
 use crate::domain::models::hash::Hash;
 
 #[derive(Debug, Serialize)]
@@ -41,9 +43,11 @@ mod tests {
     use async_trait::async_trait;
     use tokio::sync::Mutex;
     use crate::application::common::id_provider::test::MockIdProvider;
-    use crate::domain::models::hash::Hash;
-    use crate::domain::models::session::Session;
-    use crate::domain::models::user::UserId;
+    use crate::domain::models::{
+        hash::Hash,
+        session::Session,
+        user::UserId,
+    };
 
     struct MockSessionReader {
         sessions: Mutex<Vec<Session>>,

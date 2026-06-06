@@ -1,6 +1,8 @@
 use leptos::prelude::*;
-use crate::controller::web::components::ui::button::Button;
-use crate::controller::web::components::ui::input::Input;
+use crate::controller::web::components::ui::{
+    button::Button,
+    input::Input,
+};
 
 #[component]
 pub fn Section() -> impl IntoView {

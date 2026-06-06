@@ -1,6 +1,7 @@
-use crate::adapters::argon2_password_hasher::Argon2PasswordHasher;
-use crate::adapters::database::pool::DbPool;
-use crate::adapters::database::user::SqliteUserGateway;
+use crate::adapters::{
+    argon2_password_hasher::Argon2PasswordHasher,
+    database::{pool::DbPool, user::SqliteUserGateway},
+};
 use crate::application::user::create_default::create_default_admin;
 
 pub async fn run(db: &DbPool) {

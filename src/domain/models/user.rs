@@ -6,6 +6,11 @@ pub type UserId = String;
 pub const USER_ID_SIZE: usize = 16;
 pub const USERNAME_MAX: usize = 128;
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UserSummary {
+    pub id: UserId,
+    pub username: String,
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct User {

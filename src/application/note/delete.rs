@@ -1,7 +1,9 @@
-use crate::application::common::exceptions::ApplicationError;
-use crate::application::common::id_provider::IdProvider;
-use crate::application::common::interactor::Interactor;
-use crate::application::common::note_gateway::NoteRemover;
+use crate::application::common::{
+    exceptions::ApplicationError,
+    id_provider::IdProvider,
+    interactor::Interactor,
+    note_gateway::NoteRemover,
+};
 use crate::domain::models::note::NoteId;
 use async_trait::async_trait;
 use serde::Deserialize;

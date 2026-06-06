@@ -2,7 +2,7 @@ mod content;
 
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
-use crate::controller::web::api::notes::by_slug;
+use crate::controller::web::lib::api::notes::by_slug;
 
 
 #[component]
@@ -16,7 +16,7 @@ pub fn Page() -> impl IntoView {
         <main class="page">
             <Suspense fallback=move || view! { <div class="p-[120px] text-center text-muted type-mono">"// загрузка..."</div> }>
                 {move || note.get().map(|opt| match opt {
-                    Some(post) => view! { <content::NoteContent post/> }.into_any(),
+                    Some(post) => view! { <content::Content post/> }.into_any(),
                     None => view! { <div class="p-[120px] text-center text-muted type-mono">"// запись не найдена"</div> }.into_any(),
                 })}
             </Suspense>

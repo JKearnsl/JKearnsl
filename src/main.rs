@@ -25,8 +25,6 @@ async fn main() {
     use jkearnsl::controller::web::app::App;
 
     use adapters::database::pool::create_pool;
-    use adapters::database::user::SqliteUserGateway;
-    use adapters::database::session::SqliteSessionGateway;
     use adapters::auth::token::TokenProcessor;
     use jkearnsl::controller::default_user;
     use jkearnsl::controller::session_vacuum;
@@ -44,8 +42,6 @@ async fn main() {
         Duration::from_secs(60 * 60),
     ));
 
-    let user_gateway = web::Data::new(SqliteUserGateway::new(db_pool.clone()));
-    let session_gateway = web::Data::new(SqliteSessionGateway::new(db_pool.clone()));
     let token_processor = web::Data::new(TokenProcessor::new(db_pool.clone()));
     let ioc = Arc::new(IoC::new(db_pool));
     let conf = get_configuration(None).expect("leptos configuration required");
@@ -84,8 +80,6 @@ async fn main() {
             )
             .app_data(web::Data::new(leptos_options.to_owned()))
             .app_data(ioc_data)
-            .app_data(user_gateway.clone())
-            .app_data(session_gateway.clone())
             .app_data(token_processor.clone())
             .wrap(Logger::default())
             .wrap(Compress::default())

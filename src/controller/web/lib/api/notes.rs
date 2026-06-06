@@ -23,12 +23,12 @@ pub async fn by_slug(slug: String) -> Result<Option<Note>, ApplicationError> {
     use crate::interactor_factory::InteractorFactory;
     use crate::application::common::interactor::Interactor;
     use crate::application::note::get_by_slug::Input;
-    use crate::controller::web::markdown::render_markdown;
+    use crate::controller::web::lib::markdown;
 
     let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
     match ioc.get_note_by_slug().execute(Input { slug }).await {
         Ok(mut note) => {
-            note.body = render_markdown(&note.body);
+            note.body = markdown::render(&note.body);
             Ok(Some(note))
         },
         Err(ApplicationError::NotFound) => Ok(None),

@@ -1,1 +1,1 @@
-pub use crate::controller::web::components::notes::note_content::NoteContent;
+pub use crate::controller::web::components::notes::content::Content;

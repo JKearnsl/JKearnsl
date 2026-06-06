@@ -1,9 +1,11 @@
 use leptos::prelude::*;
 use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
-use crate::controller::web::api::{session, users};
-use crate::controller::web::components::ui::button::Button;
-use crate::controller::web::components::ui::form_field::FormField;
+use crate::controller::web::lib::api::{session, users};
+use crate::controller::web::components::ui::{
+    button::Button,
+    form_field::FormField,
+};
 
 const INPUT_CLASS: &str = "w-full bg-cream/40 border border-[var(--line)] rounded-[var(--radius-sm)] \
     py-[13px] px-4 font-sans text-[15px] text-ink outline-none \
