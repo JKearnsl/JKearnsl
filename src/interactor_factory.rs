@@ -8,6 +8,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use crate::application::note::update::UpdateNote;
     use crate::application::note::delete::DeleteNote;
     use crate::application::session::create::CreateSession;
+    use crate::application::user::create::CreateUser;
     use crate::application::common::id_provider::IdProvider;
 
     pub trait InteractorFactory: Send + Sync {
@@ -19,5 +20,6 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         fn update_note(&self, id_provider: Box<dyn IdProvider>) -> UpdateNote<'_>;
         fn delete_note(&self, id_provider: Box<dyn IdProvider>) -> DeleteNote<'_>;
         fn create_session(&self, id_provider: Box<dyn IdProvider>) -> CreateSession<'_>;
+        fn create_user(&self) -> CreateUser<'_>;
     }
 }}

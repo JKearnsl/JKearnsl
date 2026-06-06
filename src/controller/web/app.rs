@@ -5,6 +5,7 @@ use leptos_router::{
     ParamSegment, StaticSegment, WildcardSegment,
 };
 
+use super::store::session::SessionStore;
 use super::components::{header, footer, wipe_overlay};
 use super::pages::{
     about,
@@ -20,6 +21,8 @@ use super::pages::{
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+
+    provide_context(SessionStore::new());
 
     let theme = RwSignal::new("light".to_string());
     provide_context(theme);

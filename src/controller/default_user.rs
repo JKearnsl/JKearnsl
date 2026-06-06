@@ -1,20 +1,23 @@
-use crate::adapters::{
-    argon2_password_hasher::Argon2PasswordHasher,
-    database::{pool::DbPool, user::SqliteUserGateway},
+use crate::application::{
+    common::{
+        exceptions::ApplicationError,
+        interactor::Interactor,
+    },
+    user::create::Input,
 };
-use crate::application::user::create_default::create_default_admin;
+use crate::interactor_factory::InteractorFactory;
 
-pub async fn run(db: &DbPool) {
-    let gateway = SqliteUserGateway::new(db.clone());
-    let hasher = Argon2PasswordHasher::new();
+pub async fn run(ioc: &dyn InteractorFactory) -> Result<(), ApplicationError> {
+    const USERNAME: &str = "admin";
+    const PASSWORD: &str = "admin";
 
-    match create_default_admin(&gateway, &gateway, &hasher).await {
-        Ok(Some(creds)) => log::info!(
-            "Default user created — login: {}, password: {}",
-            creds.username,
-            creds.password,
-        ),
-        Ok(None) => {}
-        Err(e) => log::error!("Failed to create default user: {}", e),
+    match ioc.create_user()
+        .execute(Input { username: USERNAME.to_string(), password: PASSWORD.to_string() })
+        .await
+    {
+        Ok(()) => log::info!("default user created — login: {}, password: {}", USERNAME, PASSWORD),
+        Err(ApplicationError::ValidationError(_)) => {}
+        Err(e) => return Err(e),
     }
+    Ok(())
 }

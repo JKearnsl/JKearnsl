@@ -34,16 +34,16 @@ async fn main() {
     pretty_env_logger::init_custom_env("LOG_LEVEL");
 
     let db_pool = create_pool(config.workers).await;
+    let ioc = Arc::new(IoC::new(db_pool.clone()));
 
-    default_user::run(&db_pool).await;
+    default_user::run(&*ioc).await.expect("seeding default user");
 
     tokio::spawn(session_vacuum::run(
         db_pool.clone(),
         Duration::from_secs(60 * 60),
     ));
 
-    let token_processor = web::Data::new(TokenProcessor::new(db_pool.clone()));
-    let ioc = Arc::new(IoC::new(db_pool));
+    let token_processor = web::Data::new(TokenProcessor::new(db_pool));
     let conf = get_configuration(None).expect("leptos configuration required");
     let site_addr = conf.leptos_options.site_addr;
     let has_tls = config.tls.is_some();

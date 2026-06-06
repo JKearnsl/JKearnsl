@@ -1,6 +1,5 @@
 use leptos::prelude::*;
-use crate::controller::web::lib::api::users::get_self;
-
+use crate::controller::web::store::session::SessionStore;
 
 #[component]
 pub fn Footer() -> impl IntoView {
@@ -9,7 +8,7 @@ pub fn Footer() -> impl IntoView {
     let git_hash = env!("GIT_HASH");
     let commit_url = format!("https://github.com/JKearnsl/JKearnsl/commit/{git_hash}");
 
-    let current_user = Resource::new(|| (), |_| get_self());
+    let session = use_context::<SessionStore>().expect("SessionStore");
 
     view! {
         <footer class="border-t border-[var(--line)] bg-cream-2 pt-[72px] pb-[28px]">
@@ -53,9 +52,9 @@ pub fn Footer() -> impl IntoView {
                         <Suspense fallback=move || view! {
                             <a href="/sign-in" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"войти"</a>
                         }>
-                            {move || current_user.get().map(|user| match user {
-                                Ok(Some(username)) => view! {
-                                    <a href="/control" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">{username}</a>
+                            {move || session.user.get().map(|user| match user {
+                                Ok(Some(u)) => view! {
+                                    <a href="/control" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">{u.username}</a>
                                 }.into_any(),
                                 _ => view! {
                                     <a href="/sign-in" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"войти"</a>

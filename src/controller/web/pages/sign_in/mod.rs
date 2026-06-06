@@ -1,7 +1,8 @@
 use leptos::prelude::*;
 use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
-use crate::controller::web::lib::api::{session, users};
+use crate::controller::web::lib::api::session;
+use crate::controller::web::store::session::SessionStore;
 use crate::controller::web::components::ui::{
     button::Button,
     form_field::FormField,
@@ -20,22 +21,27 @@ pub fn Page() -> impl IntoView {
     let logout_action = ServerAction::<session::RemoveSelf>::new();
     let pending = login_action.pending();
     let login_result = login_action.value();
+    let logout_result = logout_action.value();
     let navigate = use_navigate();
     let navigate = StoredValue::new(navigate);
 
-    let current_user = Resource::new(
-        move || (login_action.version().get(), logout_action.version().get()),
-        |_| users::get_self(),
-    );
+    let session = use_context::<SessionStore>().expect("SessionStore");
 
     Effect::new(move |_| {
         if let Some(Ok(())) = login_result.get() {
+            session.refetch();
             navigate.with_value(|nav| nav("/control", Default::default()));
         }
     });
 
     Effect::new(move |_| {
-        if let Some(Ok(Some(_))) = current_user.get() {
+        if logout_result.get().is_some() {
+            session.refetch();
+        }
+    });
+
+    Effect::new(move |_| {
+        if let Some(Ok(Some(_))) = session.user.get() {
             navigate.with_value(|nav| nav("/control", Default::default()));
         }
     });
@@ -55,10 +61,10 @@ pub fn Page() -> impl IntoView {
                     <Suspense fallback=move || view! {
                         <h1 class="h-card mb-2">"Вход"</h1>
                     }>
-                        {move || current_user.get().map(|user| match user {
-                            Ok(Some(username)) => view! {
+                        {move || session.user.get().map(|user| match user {
+                            Ok(Some(u)) => view! {
                                 <h1 class="h-card mb-2">
-                                    "Привет, " {username.clone()} "."
+                                    "Привет, " {u.username.clone()} "."
                                 </h1>
                                 <p class="font-mono text-[12px] text-muted mb-8 leading-[1.6]">"Вы уже вошли в систему."</p>
                                 <div class="flex flex-col gap-[18px]">

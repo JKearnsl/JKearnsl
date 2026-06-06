@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use sqlx::Row;
-use crate::application::common::user_gateway::{UserReader, UserWriter};
-use crate::domain::models::user::User;
+use crate::application::common::user_gateway::{UserGateway, UserReader, UserRemover, UserWriter};
+use crate::domain::models::user::{User, UserId};
 
 #[derive(Clone)]
 pub struct SqliteUserGateway {
@@ -69,3 +69,16 @@ impl UserWriter for SqliteUserGateway {
         .ok();
     }
 }
+
+#[async_trait]
+impl UserRemover for SqliteUserGateway {
+    async fn remove(&self, user_id: &UserId) {
+        sqlx::query("DELETE FROM users WHERE id = ?")
+            .bind(user_id)
+            .execute(&self.pool)
+            .await
+            .ok();
+    }
+}
+
+impl UserGateway for SqliteUserGateway {}

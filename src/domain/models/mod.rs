@@ -1,7 +1,6 @@
 pub mod note;
 #[cfg(feature = "ssr")]
 pub mod project;
-#[cfg(feature = "ssr")]
 pub mod user;
 #[cfg(feature = "ssr")]
 pub mod hash;

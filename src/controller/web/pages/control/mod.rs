@@ -4,6 +4,7 @@ use leptos::prelude::*;
 use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
 use crate::controller::web::lib::api;
+use crate::controller::web::store::session::SessionStore;
 
 #[derive(Clone, PartialEq)]
 pub enum AdminView {
@@ -18,10 +19,10 @@ pub fn Page() -> impl IntoView {
     let navigate = StoredValue::new(navigate);
     let view: RwSignal<AdminView> = RwSignal::new(AdminView::Overview);
 
-    let current_user = Resource::new(|| (), |_| api::users::get_self());
+    let session = use_context::<SessionStore>().expect("SessionStore");
 
     Effect::new(move |_| {
-        if let Some(Ok(None)) = current_user.get() {
+        if let Some(Ok(None)) = session.user.get() {
             navigate.with_value(|nav| nav("/sign-in", Default::default()));
         }
     });
@@ -35,8 +36,8 @@ pub fn Page() -> impl IntoView {
         <main class="page pt-[56px] pb-[96px]">
             <div class="wrap">
                 <Suspense>
-                    {move || current_user.get().map(|user| match user {
-                        Ok(Some(username)) => view! {
+                    {move || session.user.get().map(|user| match user {
+                        Ok(Some(u)) => view! {
                             <div class="pb-8 border-b border-[var(--line)]">
                                 <div class="type-eyebrow flex items-center gap-3 mb-[18px]">
                                     <span class="w-8 h-px bg-terracotta shrink-0"/>
@@ -44,7 +45,7 @@ pub fn Page() -> impl IntoView {
                                 </div>
                                 <div class="flex items-baseline justify-between gap-4 flex-wrap">
                                     <h1 class="h-section">"Панель управления"</h1>
-                                    <span class="py-[6px] px-[14px] rounded-full bg-terracotta/10 text-terracotta border border-terracotta/25 type-mono">"@"{username}</span>
+                                    <span class="py-[6px] px-[14px] rounded-full bg-terracotta/10 text-terracotta border border-terracotta/25 type-mono">"@"{u.username}</span>
                                 </div>
                             </div>
 

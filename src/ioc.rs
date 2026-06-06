@@ -8,7 +8,18 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use crate::application::note::update::UpdateNote;
     use crate::application::note::delete::DeleteNote;
     use crate::application::session::create::CreateSession;
+    use crate::application::user::create::CreateUser;
     use crate::application::common::id_provider::IdProvider;
+    use crate::domain::models::user::UserId;
+
+    struct BootstrapIdProvider;
+
+    impl IdProvider for BootstrapIdProvider {
+        fn session(&self) -> Option<&String> { None }
+        fn user_id(&self) -> Option<&UserId> { None }
+        fn username(&self) -> Option<&String> { None }
+        fn is_auth(&self) -> bool { true }
+    }
     use crate::interactor_factory::InteractorFactory;
     use crate::adapters::database::note::NoteGateway;
     use crate::adapters::database::user::SqliteUserGateway;
@@ -80,6 +91,14 @@ cfg_if! { if #[cfg(feature = "ssr")] {
                 user_reader: &self.user_gateway,
                 hasher: &self.hasher,
                 session_writer: &self.session_gateway,
+            }
+        }
+
+        fn create_user(&self) -> CreateUser<'_> {
+            CreateUser {
+                id_provider: Box::new(BootstrapIdProvider),
+                user_gateway: &self.user_gateway,
+                hasher: &self.hasher,
             }
         }
     }

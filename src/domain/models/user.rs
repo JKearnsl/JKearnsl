@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "ssr")]
 use crate::domain::models::identifier::generate;
 
 pub type UserId = String;
@@ -19,6 +21,7 @@ pub struct User {
     pub password_hash: String,
 }
 
+#[cfg(feature = "ssr")]
 impl User {
     pub fn new(username: String, password_hash: String) -> Self {
         Self {
