@@ -5,7 +5,7 @@ use crate::domain::models::user::UserSummary;
 
 #[derive(Clone, Copy)]
 pub struct SessionStore {
-    pub user: Resource<Result<Option<UserSummary>, ApplicationError>>,
+    user: Resource<Result<Option<UserSummary>, ApplicationError>>,
 }
 
 impl SessionStore {

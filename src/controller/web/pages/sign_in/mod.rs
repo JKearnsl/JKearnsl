@@ -18,10 +18,8 @@ const INPUT_CLASS: &str = "w-full bg-cream/40 border border-[var(--line)] rounde
 #[component]
 pub fn Page() -> impl IntoView {
     let login_action = ServerAction::<session::Create>::new();
-    let logout_action = ServerAction::<session::RemoveSelf>::new();
     let pending = login_action.pending();
     let login_result = login_action.value();
-    let logout_result = logout_action.value();
     let navigate = use_navigate();
     let navigate = StoredValue::new(navigate);
 
@@ -35,13 +33,7 @@ pub fn Page() -> impl IntoView {
     });
 
     Effect::new(move |_| {
-        if logout_result.get().is_some() {
-            session.refetch();
-        }
-    });
-
-    Effect::new(move |_| {
-        if let Some(Ok(Some(_))) = session.user.get() {
+        if session.is_auth() {
             navigate.with_value(|nav| nav("/control", Default::default()));
         }
     });
@@ -58,62 +50,43 @@ pub fn Page() -> impl IntoView {
                         <span class="inline-block w-[28px] h-px bg-current text-terracotta"/>
                         "// sign-in"
                     </div>
-                    <Suspense fallback=move || view! {
-                        <h1 class="h-card mb-2">"Вход"</h1>
-                    }>
-                        {move || session.user.get().map(|user| match user {
-                            Ok(Some(u)) => view! {
-                                <h1 class="h-card mb-2">
-                                    "Привет, " {u.username.clone()} "."
-                                </h1>
-                                <p class="font-mono text-[12px] text-muted mb-8 leading-[1.6]">"Вы уже вошли в систему."</p>
-                                <div class="flex flex-col gap-[18px]">
-                                    <ActionForm action=logout_action>
-                                        <Button submit=true>"Выйти →"</Button>
-                                    </ActionForm>
-                                </div>
-                            }.into_any(),
-                            _ => view! {
-                                <h1 class="h-card mb-2">"Вход"</h1>
-                                <p class="font-mono text-[12px] text-muted mb-8 leading-[1.6]">"Введите данные для доступа к панели управления."</p>
-                                <ActionForm action=login_action>
-                                    <div class="flex flex-col gap-2">
-                                        {move || login_result.get().map(|r| match r {
-                                            Err(e) => view! {
-                                                <p class="font-mono text-[12px] text-rust py-[10px] px-[14px] bg-rust/8 rounded-[var(--radius-sm)] border-l-2 border-rust">{e.to_string()}</p>
-                                            }.into_any(),
-                                            Ok(()) => view! { <span/> }.into_any(),
-                                        })}
-                                        <FormField label="Имя пользователя" label_for="username">
-                                            <input
-                                                type="text"
-                                                id="username"
-                                                name="username"
-                                                class=INPUT_CLASS
-                                                required
-                                                autocomplete="username"
-                                                placeholder="admin"
-                                            />
-                                        </FormField>
-                                        <FormField label="Пароль" label_for="password">
-                                            <input
-                                                type="password"
-                                                id="password"
-                                                name="password"
-                                                class=INPUT_CLASS
-                                                required
-                                                autocomplete="current-password"
-                                                placeholder="••••••••"
-                                            />
-                                        </FormField>
-                                        <Button submit=true class="w-full justify-center mt-2 py-[16px] px-[22px]" pending=pending>
-                                            {move || if pending.get() { "Загрузка..." } else { "Войти →" }}
-                                        </Button>
-                                    </div>
-                                </ActionForm>
-                            }.into_any(),
-                        })}
-                    </Suspense>
+                    <h1 class="h-card mb-2">"Вход"</h1>
+                    <p class="font-mono text-[12px] text-muted mb-8 leading-[1.6]">"Введите данные для доступа к панели управления."</p>
+                    <ActionForm action=login_action>
+                        <div class="flex flex-col gap-2">
+                            {move || login_result.get().map(|r| match r {
+                                Err(e) => view! {
+                                    <p class="font-mono text-[12px] text-rust py-[10px] px-[14px] bg-rust/8 rounded-[var(--radius-sm)] border-l-2 border-rust">{e.to_string()}</p>
+                                }.into_any(),
+                                Ok(()) => view! { <span/> }.into_any(),
+                            })}
+                            <FormField label="Имя пользователя" label_for="username">
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    class=INPUT_CLASS
+                                    required
+                                    autocomplete="username"
+                                    placeholder="admin"
+                                />
+                            </FormField>
+                            <FormField label="Пароль" label_for="password">
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class=INPUT_CLASS
+                                    required
+                                    autocomplete="current-password"
+                                    placeholder="••••••••"
+                                />
+                            </FormField>
+                            <Button submit=true class="w-full justify-center mt-2 py-[16px] px-[22px]" pending=pending>
+                                {move || if pending.get() { "Загрузка..." } else { "Войти →" }}
+                            </Button>
+                        </div>
+                    </ActionForm>
                 </div>
             </div>
         </main>

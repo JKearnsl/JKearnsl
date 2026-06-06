@@ -23,7 +23,7 @@ pub fn Page() -> impl IntoView {
     let session = use_context::<SessionStore>().expect("SessionStore");
 
     Effect::new(move |_| {
-        if let Some(Ok(None)) = session.user.get() {
+        if !session.is_auth() {
             navigate.with_value(|nav| nav("/sign-in", Default::default()));
         }
     });
@@ -37,8 +37,7 @@ pub fn Page() -> impl IntoView {
         <main class="page pt-[56px] pb-[96px]">
             <div class="wrap">
                 <Suspense>
-                    {move || session.user.get().map(|user| match user {
-                        Ok(Some(u)) => view! {
+                    {move || session.get().map(|u| view! {
                             <div class="pb-8 border-b border-[var(--line)]">
                                 <div class="type-eyebrow flex items-center gap-3 mb-[18px]">
                                     <span class="w-8 h-px bg-terracotta shrink-0"/>
@@ -94,10 +93,6 @@ pub fn Page() -> impl IntoView {
                                     }.into_any(),
                                 }}
                             </div>
-                        }.into_any(),
-                        _ => view! {
-                            <div class="p-20 text-center text-muted type-mono">"// проверка авторизации..."</div>
-                        }.into_any(),
                     })}
                 </Suspense>
             </div>

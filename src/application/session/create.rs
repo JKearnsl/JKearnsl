@@ -74,7 +74,7 @@ mod tests {
 
     #[async_trait]
     impl SessionTokenGenerator for MockSessionTokenGenerator {
-        async fn generate(&self) -> [u8; 32] {
+        async fn generate(&self) -> Token {
             [0u8; 32]
         }
     }

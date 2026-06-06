@@ -52,14 +52,14 @@ pub fn Footer() -> impl IntoView {
                         <Suspense fallback=move || view! {
                             <a href="/sign-in" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"войти"</a>
                         }>
-                            {move || session.user.get().map(|user| match user {
-                                Ok(Some(u)) => view! {
+                            {move || match session.get() {
+                                Some(u) => view! {
                                     <a href="/control" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">{u.username}</a>
                                 }.into_any(),
-                                _ => view! {
+                                None => view! {
                                     <a href="/sign-in" class="text-terracotta underline decoration-dotted underline-offset-[2px] transition-colors hover:text-ochre">"войти"</a>
                                 }.into_any(),
-                            })}
+                            }}
                         </Suspense>
                     </span>
                 </div>
