@@ -54,8 +54,7 @@ impl Interactor<Input, Output> for UpdateNote<'_> {
             )])));
         }
 
-        let mut note = self.note_reader.get_by_id(&data.id).await
-            .ok_or(ApplicationError::NotFound)?;
+        let mut note = self.note_reader.by_id(&data.id).await?;
 
         note.title = data.title;
         note.slug = slug::slugify(&note.title);
@@ -67,8 +66,9 @@ impl Interactor<Input, Output> for UpdateNote<'_> {
         note.state = if data.publish { State::Published } else { State::Draft };
         note.updated_at = Some(Utc::now());
 
-        self.note_writer.save(&note).await;
+        let slug = note.slug.clone();
+        self.note_writer.save(note).await?;
 
-        Ok(Output { slug: note.slug })
+        Ok(Output { slug })
     }
 }

@@ -26,6 +26,8 @@ async fn main() {
 
     use adapters::database::pool::create_pool;
     use adapters::auth::token::TokenProcessor;
+    use adapters::database::session::SqliteSessionGateway;
+    use adapters::database::user::SqliteUserGateway;
     use jkearnsl::controller::default_user;
     use jkearnsl::controller::session_vacuum;
     use jkearnsl::ioc::IoC;
@@ -43,7 +45,10 @@ async fn main() {
         Duration::from_secs(60 * 60),
     ));
 
-    let token_processor = web::Data::new(TokenProcessor::new(db_pool));
+    let token_processor = web::Data::new(TokenProcessor::new(
+        SqliteSessionGateway::new(db_pool.clone()),
+        SqliteUserGateway::new(db_pool.clone()),
+    ));
     let conf = get_configuration(None).expect("leptos configuration required");
     let site_addr = conf.leptos_options.site_addr;
     let has_tls = config.tls.is_some();

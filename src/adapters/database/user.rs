@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use sqlx::Row;
-use crate::application::common::user_gateway::{UserGateway, UserReader, UserRemover, UserWriter};
+use crate::application::common::user_gateway::{UserGateway, UserGatewayError, UserReader, UserRemover, UserWriter};
 use crate::domain::models::user::{User, UserId};
 
 #[derive(Clone)]
@@ -16,45 +16,53 @@ impl SqliteUserGateway {
 
 #[async_trait]
 impl UserReader for SqliteUserGateway {
-    async fn get_by_username(&self, username: &str) -> Option<User> {
+    async fn by_id(&self, user_id: &UserId) -> Result<Option<User>, UserGatewayError> {
+        let row = sqlx::query("SELECT id, username, password_phc FROM users WHERE id = ?")
+            .bind(user_id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| UserGatewayError::Internal(e.to_string()))?;
+
+        Ok(row.and_then(|r| Some(User {
+            id: r.try_get("id").ok()?,
+            username: r.try_get("username").ok()?,
+            password_hash: r.try_get("password_phc").ok()?,
+        })))
+    }
+
+    async fn by_username(&self, username: &str) -> Result<Option<User>, UserGatewayError> {
         let row = sqlx::query("SELECT id, username, password_phc FROM users WHERE username = ?")
             .bind(username)
             .fetch_optional(&self.pool)
             .await
-            .ok()
-            .flatten()?;
+            .map_err(|e| UserGatewayError::Internal(e.to_string()))?;
 
-        Some(User {
-            id: row.try_get("id").ok()?,
-            username: row.try_get("username").ok()?,
-            password_hash: row.try_get("password_phc").ok()?,
-        })
+        Ok(row.and_then(|r| Some(User {
+            id: r.try_get("id").ok()?,
+            username: r.try_get("username").ok()?,
+            password_hash: r.try_get("password_phc").ok()?,
+        })))
     }
 
-    async fn get_all(&self) -> Vec<User> {
-        let rows = match sqlx::query("SELECT id, username, password_phc FROM users")
+    async fn list(&self) -> Result<Vec<User>, UserGatewayError> {
+        let rows = sqlx::query("SELECT id, username, password_phc FROM users")
             .fetch_all(&self.pool)
             .await
-        {
-            Ok(r) => r,
-            Err(_) => return vec![],
-        };
+            .map_err(|e| UserGatewayError::Internal(e.to_string()))?;
 
-        rows.into_iter()
-            .filter_map(|row| {
-                Some(User {
-                    id: row.try_get("id").ok()?,
-                    username: row.try_get("username").ok()?,
-                    password_hash: row.try_get("password_phc").ok()?,
-                })
-            })
-            .collect()
+        Ok(rows.into_iter()
+            .filter_map(|row| Some(User {
+                id: row.try_get("id").ok()?,
+                username: row.try_get("username").ok()?,
+                password_hash: row.try_get("password_phc").ok()?,
+            }))
+            .collect())
     }
 }
 
 #[async_trait]
 impl UserWriter for SqliteUserGateway {
-    async fn save(&self, user: &User) {
+    async fn save(&self, user: &User) -> Result<(), UserGatewayError> {
         sqlx::query(
             "INSERT INTO users (id, username, password_phc) VALUES (?, ?, ?)
              ON CONFLICT(id) DO UPDATE SET
@@ -66,18 +74,20 @@ impl UserWriter for SqliteUserGateway {
         .bind(&user.password_hash)
         .execute(&self.pool)
         .await
-        .ok();
+        .map(|_| ())
+        .map_err(|e| UserGatewayError::Internal(e.to_string()))
     }
 }
 
 #[async_trait]
 impl UserRemover for SqliteUserGateway {
-    async fn remove(&self, user_id: &UserId) {
+    async fn remove(&self, user_id: &UserId) -> Result<(), UserGatewayError> {
         sqlx::query("DELETE FROM users WHERE id = ?")
             .bind(user_id)
             .execute(&self.pool)
             .await
-            .ok();
+            .map(|_| ())
+            .map_err(|e| UserGatewayError::Internal(e.to_string()))
     }
 }
 

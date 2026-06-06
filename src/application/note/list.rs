@@ -4,7 +4,7 @@ use crate::application::common::{
     interactor::Interactor,
     note_gateway::NoteReader,
 };
-use crate::domain::models::note::{Category, NoteListItem};
+use crate::domain::models::note::{Category, NoteListItem, State};
 use async_trait::async_trait;
 use serde::Deserialize;
 
@@ -23,14 +23,7 @@ pub struct ListNotes<'a> {
 #[async_trait]
 impl Interactor<Input, Vec<NoteListItem>> for ListNotes<'_> {
     async fn execute(&self, data: Input) -> Result<Vec<NoteListItem>, ApplicationError> {
-        if self.id_provider.is_auth() {
-            return Ok(self.note_reader.range_all(&data.limit, &data.offset).await);
-        }
-
-        let notes = match data.category {
-            Some(ref cat) => self.note_reader.range_by_category(cat.as_str(), &data.limit, &data.offset).await,
-            None => self.note_reader.range(&data.limit, &data.offset).await,
-        };
-        Ok(notes)
+        let state = if !self.id_provider.is_auth() { Some(State::Published) } else { None };
+        Ok(self.note_reader.list(&data.limit, &data.offset, state.as_ref(), data.category.as_ref(), None).await?)
     }
 }

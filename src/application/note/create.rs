@@ -54,7 +54,7 @@ impl Interactor<Input, Output> for CreateNote<'_> {
             )])));
         }
 
-        let no = self.note_reader.next_no().await;
+        let no = self.note_reader.next_no().await?;
 
         let mut note = Note::new(
             no,
@@ -70,8 +70,11 @@ impl Interactor<Input, Output> for CreateNote<'_> {
             note.publish();
         }
 
-        self.note_writer.save(&note).await;
+        let id = note.id.clone();
+        let slug = note.slug.clone();
+        let title = note.title.clone();
+        self.note_writer.save(note).await?;
 
-        Ok(Output { id: note.id, slug: note.slug, title: note.title })
+        Ok(Output { id, slug, title })
     }
 }

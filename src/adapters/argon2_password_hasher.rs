@@ -37,10 +37,10 @@ impl Hasher for Argon2PasswordHasher {
         Hash(phc_bytes)
     }
 
-    async fn verify(&self, bytes: &[u8], hash: &[u8]) -> bool {
+    async fn verify(&self, bytes: &[u8], hash: &Hash) -> bool {
         let hasher = self.hasher.clone();
         let bytes = bytes.to_vec();
-        let hash = hash.to_vec();
+        let hash = hash.0.clone();
         tokio::task::spawn_blocking(move || {
             let hash_str = std::str::from_utf8(&hash).unwrap_or("");
             match PasswordHash::new(hash_str) {

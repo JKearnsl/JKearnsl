@@ -24,7 +24,7 @@ impl Interactor<Input, ()> for DeleteNote<'_> {
         if !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);
         }
-        self.note_remover.remove(&data.id).await;
+        self.note_remover.remove(&data.id).await?;
         Ok(())
     }
 }

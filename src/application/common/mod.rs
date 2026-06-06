@@ -14,3 +14,5 @@ pub mod project_gateway;
 pub mod user_gateway;
 #[cfg(feature = "ssr")]
 pub mod session_gateway;
+#[cfg(feature = "ssr")]
+pub mod token_generator;

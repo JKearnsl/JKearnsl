@@ -34,7 +34,7 @@ impl Interactor<Input, ()> for CreateUser<'_> {
             )])));
         }
 
-        if self.user_gateway.get_by_username(&data.username).await.is_some() {
+        if self.user_gateway.by_username(&data.username).await?.is_some() {
             return Err(ApplicationError::ValidationError(HashMap::from([(
                 "username".to_string(),
                 "Username already exists".to_string(),
@@ -43,10 +43,10 @@ impl Interactor<Input, ()> for CreateUser<'_> {
 
         let hash = self.hasher.hash(data.password.as_bytes()).await;
         let password_hash = String::from_utf8(hash.0)
-            .map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+            .map_err(|e| ApplicationError::Internal(e.to_string()))?;
 
         let user = User::new(data.username, password_hash);
-        self.user_gateway.save(&user).await;
+        self.user_gateway.save(&user).await?;
 
         Ok(())
     }

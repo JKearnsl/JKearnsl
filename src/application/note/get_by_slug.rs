@@ -20,7 +20,6 @@ pub struct GetBySlugNote<'a> {
 #[async_trait]
 impl Interactor<Input, Note> for GetBySlugNote<'_> {
     async fn execute(&self, data: Input) -> Result<Note, ApplicationError> {
-        self.note_reader.get_by_slug(&data.slug).await
-            .ok_or(ApplicationError::NotFound)
+        self.note_reader.by_slug(&data.slug).await.map_err(ApplicationError::from)
     }
 }

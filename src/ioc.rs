@@ -27,13 +27,17 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use crate::adapters::database::user::SqliteUserGateway;
     use crate::adapters::database::session::SqliteSessionGateway;
     use crate::adapters::argon2_password_hasher::Argon2PasswordHasher;
+    use crate::adapters::sha256_hasher::Sha256Hasher;
+    use crate::adapters::rand_token_generator::RandSessionTokenGenerator;
     use crate::adapters::database::pool::DbPool;
 
     pub struct IoC {
         note_gateway: NoteGateway,
         user_gateway: SqliteUserGateway,
         session_gateway: SqliteSessionGateway,
-        hasher: Argon2PasswordHasher,
+        password_hasher: Argon2PasswordHasher,
+        session_hasher: Sha256Hasher,
+        session_token_generator: RandSessionTokenGenerator,
     }
 
     impl IoC {
@@ -42,7 +46,9 @@ cfg_if! { if #[cfg(feature = "ssr")] {
                 note_gateway: NoteGateway::new(db_pool.clone()),
                 user_gateway: SqliteUserGateway::new(db_pool.clone()),
                 session_gateway: SqliteSessionGateway::new(db_pool),
-                hasher: Argon2PasswordHasher::new(),
+                password_hasher: Argon2PasswordHasher::new(),
+                session_hasher: Sha256Hasher,
+                session_token_generator: RandSessionTokenGenerator,
             }
         }
     }
@@ -89,7 +95,9 @@ cfg_if! { if #[cfg(feature = "ssr")] {
             CreateSession {
                 id_provider,
                 user_reader: &self.user_gateway,
-                hasher: &self.hasher,
+                password_hasher: &self.password_hasher,
+                session_hasher: &self.session_hasher,
+                session_token_generator: &self.session_token_generator,
                 session_writer: &self.session_gateway,
             }
         }
@@ -98,7 +106,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
             CreateUser {
                 id_provider: Box::new(BootstrapIdProvider),
                 user_gateway: &self.user_gateway,
-                hasher: &self.hasher,
+                hasher: &self.password_hasher,
             }
         }
 
@@ -107,7 +115,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         }
 
         fn vacuum_sessions(&self) -> VacuumSessions<'_> {
-            VacuumSessions { session_vacuum: &self.session_gateway, max_age_secs: SESSION_TTL_SECS }
+            VacuumSessions { session_remover: &self.session_gateway, max_age_secs: SESSION_TTL_SECS }
         }
     }
 }}

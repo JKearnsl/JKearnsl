@@ -1,7 +1,11 @@
-use sha2::Digest;
-use sqlx::Row;
-use crate::application::common::id_provider::IdProvider;
-use crate::domain::models::user::UserId;
+use sha2::{Sha256, Digest};
+use crate::application::common::{
+    id_provider::IdProvider,
+    session_gateway::{SessionReader, SessionRemover},
+    user_gateway::UserReader,
+};
+use crate::adapters::database::{session::SqliteSessionGateway, user::SqliteUserGateway};
+use crate::domain::models::{hash::Hash, user::UserId};
 
 pub struct IdTokenProvider {
     token: Option<String>,
@@ -13,7 +17,7 @@ pub struct IdTokenProvider {
 impl IdTokenProvider {
     pub async fn new(token: Option<String>, token_processor: &TokenProcessor) -> Self {
         match token {
-            Some(token) => match token_processor.get_token_session(&token).await {
+            Some(token) => match token_processor.get_session(&token).await {
                 Some((user_id, username)) => Self { token: Some(token), user_id: Some(user_id), username: Some(username), is_auth: true },
                 None => Self { token: None, user_id: None, username: None, is_auth: false },
             },
@@ -35,12 +39,13 @@ impl IdProvider for IdTokenProvider {
 
 
 pub struct TokenProcessor {
-    pool: sqlx::SqlitePool,
+    session_gateway: SqliteSessionGateway,
+    user_gateway: SqliteUserGateway,
 }
 
 impl TokenProcessor {
-    pub fn new(pool: sqlx::SqlitePool) -> Self {
-        Self { pool }
+    pub fn new(session_gateway: SqliteSessionGateway, user_gateway: SqliteUserGateway) -> Self {
+        Self { session_gateway, user_gateway }
     }
 
     fn decode_hex(hex: &str) -> Option<[u8; 32]> {
@@ -52,30 +57,18 @@ impl TokenProcessor {
         Some(bytes)
     }
 
-    pub async fn get_token_session(&self, hex: &str) -> Option<(UserId, String)> {
+    pub async fn get_session(&self, hex: &str) -> Option<(UserId, String)> {
         let raw = Self::decode_hex(hex)?;
-        let hash: [u8; 32] = sha2::Sha256::digest(raw).into();
-        let row = sqlx::query(
-            "SELECT u.id, u.username FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.token_hash = ?"
-        )
-        .bind(hash.as_slice())
-        .fetch_optional(&self.pool)
-        .await
-        .ok()
-        .flatten()?;
-        let user_id: UserId = row.try_get("id").ok()?;
-        let username: String = row.try_get("username").ok()?;
-        Some((user_id, username))
+        let hash: [u8; 32] = Sha256::digest(raw).into();
+        let session = self.session_gateway.by_token_hash(&Hash(hash.to_vec())).await.ok()??;
+        let user = self.user_gateway.by_id(&session.user_id).await.ok()??;
+        Some((user.id, user.username))
     }
 
-    pub async fn remove_token_session(&self, hex: &str) {
+    pub async fn remove_session(&self, hex: &str) {
         if let Some(raw) = Self::decode_hex(hex) {
-            let hash: [u8; 32] = sha2::Sha256::digest(raw).into();
-            sqlx::query("DELETE FROM sessions WHERE token_hash = ?")
-                .bind(hash.as_slice())
-                .execute(&self.pool)
-                .await
-                .ok();
+            let hash: [u8; 32] = Sha256::digest(raw).into();
+            self.session_gateway.remove_by_token_hash(&Hash(hash.to_vec())).await.ok();
         }
     }
 }

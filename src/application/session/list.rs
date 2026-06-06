@@ -28,7 +28,7 @@ impl Interactor<(), Vec<SessionItem>> for ListSessions<'_> {
         }
 
         let user_id = self.id_provider.user_id().ok_or(ApplicationError::Unauthorized)?;
-        let sessions = self.session_reader.get_by_user_id(user_id).await;
+        let sessions = self.session_reader.by_user_id(user_id).await?;
 
         Ok(sessions.into_iter().map(|s| SessionItem {
             token_hash: s.token_hash,
@@ -42,7 +42,10 @@ mod tests {
     use super::*;
     use async_trait::async_trait;
     use tokio::sync::Mutex;
-    use crate::application::common::id_provider::test::MockIdProvider;
+    use crate::application::common::{
+        id_provider::test::MockIdProvider,
+        session_gateway::SessionGatewayError,
+    };
     use crate::domain::models::{
         hash::Hash,
         session::Session,
@@ -55,12 +58,16 @@ mod tests {
 
     #[async_trait]
     impl SessionReader for MockSessionReader {
-        async fn get_by_user_id(&self, user_id: &UserId) -> Vec<Session> {
-            self.sessions.lock().await
+        async fn by_token_hash(&self, _token_hash: &Hash) -> Result<Option<Session>, SessionGatewayError> {
+            Ok(None)
+        }
+
+        async fn by_user_id(&self, user_id: &UserId) -> Result<Vec<Session>, SessionGatewayError> {
+            Ok(self.sessions.lock().await
                 .iter()
                 .filter(|s| &s.user_id == user_id)
                 .cloned()
-                .collect()
+                .collect())
         }
     }
 

@@ -17,16 +17,16 @@ fn format_map(errors: &HashMap<String, String>) -> String {
 
 #[derive(Error, Debug, Clone, Serialize, Deserialize)]
 pub enum ApplicationError {
-    #[error("NotFound")]
+    #[error("not found")]
     NotFound,
-    #[error("ValidationError: {}", format_map(.0))]
+    #[error("invalid input: {}", format_map(.0))]
     ValidationError(HashMap<String, String>),
-    #[error("Unauthorized")]
+    #[error("invalid credentials")]
     Unauthorized,
-    #[error("Forbidden: You do not have permission to perform this action!")]
+    #[error("you do not have permission to perform this action!")]
     Forbidden,
-    #[error("UnexpectedError: {0}")]
-    UnexpectedError(String),
+    #[error("server internal: {0}")]
+    Internal(String),
 }
 
 

@@ -21,7 +21,7 @@ impl Interactor<(), Vec<UserSummary>> for GetUserList<'_> {
 
         // This might not be the best strategy, but I won't have many users
         // other than me and a couple of bots
-        let users = self.user_reader.get_all().await;
+        let users = self.user_reader.list().await?;
 
         Ok(users.into_iter().map(|u| UserSummary { id: u.id, username: u.username }).collect())
     }

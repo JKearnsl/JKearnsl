@@ -15,9 +15,9 @@ pub async fn list(
     use crate::application::common::interactor::Interactor;
     use crate::application::note::list::Input;
 
-    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
 
     let token = req.cookie("session").map(|c| c.value().to_string());
     let id_provider = IdTokenProvider::new(token, &token_processor).await;
@@ -34,7 +34,7 @@ pub async fn by_slug(slug: String) -> Result<Option<Note>, ApplicationError> {
     use crate::application::note::get_by_slug::Input;
     use crate::controller::web::lib::markdown;
 
-    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
     match ioc.get_note_by_slug().execute(Input { slug }).await {
         Ok(mut note) => {
             note.body = markdown::render(&note.body);
@@ -54,9 +54,9 @@ pub async fn by_id(id: NoteId) -> Result<Option<Note>, ApplicationError> {
     use crate::application::common::interactor::Interactor;
     use crate::application::note::get_by_id::Input;
 
-    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
 
     let token = req.cookie("session").map(|c| c.value().to_string());
     let id_provider = IdTokenProvider::new(token, &token_processor).await;
@@ -87,9 +87,9 @@ pub async fn create(
     use crate::domain::models::note::Category;
     use std::collections::HashMap;
 
-    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
 
     let token = req.cookie("session").map(|c| c.value().to_string());
     let id_provider = IdTokenProvider::new(token, &token_processor).await;
@@ -126,9 +126,9 @@ pub async fn update(
     use crate::domain::models::note::Category;
     use std::collections::HashMap;
 
-    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
 
     let token = req.cookie("session").map(|c| c.value().to_string());
     let id_provider = IdTokenProvider::new(token, &token_processor).await;
@@ -154,9 +154,9 @@ pub async fn delete(id: NoteId) -> Result<(), ApplicationError> {
     use crate::application::common::interactor::Interactor;
     use crate::application::note::delete::Input;
 
-    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
 
     let token = req.cookie("session").map(|c| c.value().to_string());
     let id_provider = IdTokenProvider::new(token, &token_processor).await;

@@ -5,8 +5,10 @@ use crate::application::common::{
     id_provider::IdProvider,
     interactor::Interactor,
     session_gateway::SessionWriter,
+    token_generator::SessionTokenGenerator,
     user_gateway::UserReader,
 };
+use crate::domain::models::{hash::Hash, session::{Session, Token}};
 
 pub struct Input {
     pub username: String,
@@ -16,28 +18,32 @@ pub struct Input {
 pub struct CreateSession<'a> {
     pub id_provider: Box<dyn IdProvider>,
     pub user_reader: &'a dyn UserReader,
-    pub hasher: &'a dyn Hasher,
+    pub password_hasher: &'a dyn Hasher,
+    pub session_hasher: &'a dyn Hasher,
+    pub session_token_generator: &'a dyn SessionTokenGenerator,
     pub session_writer: &'a dyn SessionWriter,
 }
 
 #[async_trait]
-impl Interactor<Input, [u8; 32]> for CreateSession<'_> {
-    async fn execute(&self, data: Input) -> Result<[u8; 32], ApplicationError> {
+impl Interactor<Input, Token> for CreateSession<'_> {
+    async fn execute(&self, data: Input) -> Result<Token, ApplicationError> {
         if self.id_provider.is_auth() {
             return Err(ApplicationError::Forbidden);
         }
 
         let user = self.user_reader
-            .get_by_username(&data.username)
-            .await
+            .by_username(&data.username)
+            .await?
             .ok_or(ApplicationError::Unauthorized)?;
 
-        if !self.hasher.verify(data.password.as_bytes(), user.password_hash.as_bytes()).await {
+        let password_hash = Hash(user.password_hash.into_bytes());
+        if !self.password_hasher.verify(data.password.as_bytes(), &password_hash).await {
             return Err(ApplicationError::Unauthorized);
         }
 
-        let token: [u8; 32] = rand::random();
-        self.session_writer.save(&token, &user.id).await;
+        let token = self.session_token_generator.generate().await;
+        let token_hash = self.session_hasher.hash(&token).await;
+        self.session_writer.save(Session::new(token_hash, user.id)).await?;
 
         Ok(token)
     }
@@ -50,15 +56,27 @@ mod tests {
     use crate::application::common::{
         hasher::test::MockHasher,
         id_provider::test::MockIdProvider,
+        session_gateway::SessionGatewayError,
         user_gateway::test::MockUserGateway,
     };
-    use crate::domain::models::user::{User, UserId};
+    use crate::domain::models::{session::Session, user::User};
 
     struct MockSessionWriter;
 
     #[async_trait]
     impl SessionWriter for MockSessionWriter {
-        async fn save(&self, _raw_token: &[u8; 32], _user_id: &UserId) {}
+        async fn save(&self, _model: Session) -> Result<(), SessionGatewayError> {
+            Ok(())
+        }
+    }
+
+    struct MockSessionTokenGenerator;
+
+    #[async_trait]
+    impl SessionTokenGenerator for MockSessionTokenGenerator {
+        async fn generate(&self) -> [u8; 32] {
+            [0u8; 32]
+        }
     }
 
     #[tokio::test]
@@ -72,13 +90,16 @@ mod tests {
         let result = CreateSession {
             id_provider,
             user_reader: &user_reader,
-            hasher: &hasher,
+            password_hasher: &hasher,
+            session_hasher: &hasher,
+            session_token_generator: &MockSessionTokenGenerator,
             session_writer: &MockSessionWriter,
         }
         .execute(Input { username: "test".to_string(), password: "password".to_string() })
         .await;
 
         assert!(result.is_ok());
+        assert_eq!(result.unwrap(), [0u8; 32]);
     }
 
     #[tokio::test]
@@ -92,7 +113,9 @@ mod tests {
         let result = CreateSession {
             id_provider,
             user_reader: &user_reader,
-            hasher: &hasher,
+            password_hasher: &hasher,
+            session_hasher: &hasher,
+            session_token_generator: &MockSessionTokenGenerator,
             session_writer: &MockSessionWriter,
         }
         .execute(Input { username: "test".to_string(), password: "wrong".to_string() })
@@ -115,7 +138,9 @@ mod tests {
         let result = CreateSession {
             id_provider,
             user_reader: &user_reader,
-            hasher: &hasher,
+            password_hasher: &hasher,
+            session_hasher: &hasher,
+            session_token_generator: &MockSessionTokenGenerator,
             session_writer: &MockSessionWriter,
         }
         .execute(Input { username: "test".to_string(), password: "password".to_string() })

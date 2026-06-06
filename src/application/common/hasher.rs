@@ -4,7 +4,7 @@ use crate::domain::models::hash::Hash;
 #[async_trait]
 pub trait Hasher: Send + Sync {
     async fn hash(&self, bytes: &[u8]) -> Hash;
-    async fn verify(&self, bytes: &[u8], hash: &[u8]) -> bool;
+    async fn verify(&self, bytes: &[u8], hash: &Hash) -> bool;
 }
 
 
@@ -20,8 +20,8 @@ pub mod test {
             Hash(bytes.to_vec())
         }
 
-        async fn verify(&self, bytes: &[u8], hash: &[u8]) -> bool {
-            bytes == hash
+        async fn verify(&self, bytes: &[u8], hash: &Hash) -> bool {
+            bytes == hash.0.as_slice()
         }
     }
 }

@@ -13,8 +13,8 @@ impl server_fn::error::FromServerFnError for ApplicationError {
             ServerFnErrorErr::MissingArg(field) => {
                 ApplicationError::ValidationError(HashMap::from([(field, "обязательное поле".to_string())]))
             }
-            ServerFnErrorErr::ServerError(msg) => ApplicationError::UnexpectedError(msg),
-            other => ApplicationError::UnexpectedError(other.to_string()),
+            ServerFnErrorErr::ServerError(msg) => ApplicationError::Internal(msg),
+            other => ApplicationError::Internal(other.to_string()),
         }
     }
 }

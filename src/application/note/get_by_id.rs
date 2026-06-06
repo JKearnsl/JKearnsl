@@ -21,8 +21,7 @@ pub struct GetByIdNote<'a> {
 #[async_trait]
 impl Interactor<Input, Note> for GetByIdNote<'_> {
     async fn execute(&self, data: Input) -> Result<Note, ApplicationError> {
-        let note = self.note_reader.get_by_id(&data.id).await
-            .ok_or(ApplicationError::NotFound)?;
+        let note = self.note_reader.by_id(&data.id).await?;
 
         if note.state != State::Published && !self.id_provider.is_auth() {
             return Err(ApplicationError::Unauthorized);

@@ -10,9 +10,9 @@ pub async fn get_self() -> Result<Option<UserSummary>, ApplicationError> {
     use crate::interactor_factory::InteractorFactory;
     use crate::application::common::interactor::Interactor;
 
-    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
-    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::UnexpectedError(e.to_string()))?;
+    let req: HttpRequest = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let token_processor: Data<TokenProcessor> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
+    let ioc: Data<dyn InteractorFactory> = extract().await.map_err(|e| ApplicationError::Internal(e.to_string()))?;
 
     let token = req.cookie("session").map(|c| c.value().to_string());
     let id_provider = IdTokenProvider::new(token, &token_processor).await;
