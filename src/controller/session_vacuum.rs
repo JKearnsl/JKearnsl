@@ -1,21 +1,16 @@
+use std::sync::Arc;
 use std::time::Duration;
-use crate::adapters::database::{pool::DbPool, session::SqliteSessionGateway};
-use crate::application::{
-    common::interactor::Interactor,
-    session::vacuum::VacuumSessions,
-};
+use crate::application::common::interactor::Interactor;
+use crate::interactor_factory::InteractorFactory;
 
-const SESSION_TTL_SECS: i64 = 60 * 60 * 24 * 7; // 7 days
-
-pub async fn run(db: DbPool, interval: Duration) {
-    let gateway = SqliteSessionGateway::new(db);
+pub async fn run(ioc: Arc<dyn InteractorFactory>, interval: Duration) {
     let mut ticker = tokio::time::interval(interval);
     loop {
         ticker.tick().await;
-        let interactor = VacuumSessions { session_vacuum: &gateway, max_age_secs: SESSION_TTL_SECS };
-        match interactor.execute(()).await {
+        match ioc.vacuum_sessions().execute(()).await {
             Ok(n) if n > 0 => log::info!("session vacuum: removed {} expired sessions", n),
-            _ => {}
+            Ok(_) => {}
+            Err(e) => log::error!("session vacuum: {}", e),
         }
     }
 }

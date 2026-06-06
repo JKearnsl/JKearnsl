@@ -5,7 +5,6 @@ use crate::domain::models::note::{Note, NoteId, NoteListItem};
 #[async_trait]
 pub trait NoteReader: Send + Sync {
     async fn get_by_id(&self, id: &NoteId) -> Option<Note>;
-    async fn get_by_id_admin(&self, id: &NoteId) -> Option<Note>;
     async fn get_by_slug(&self, slug: &str) -> Option<Note>;
     async fn range(&self, limit: &u64, offset: &u64) -> Vec<NoteListItem>;
     async fn range_all(&self, limit: &u64, offset: &u64) -> Vec<NoteListItem>;
@@ -50,13 +49,6 @@ pub mod test {
     #[async_trait]
     impl NoteReader for MockNoteGateway {
         async fn get_by_id(&self, id: &NoteId) -> Option<Note> {
-            use crate::domain::models::note::State;
-            self.notes.lock().await.get(id)
-                .filter(|n| n.state == State::Published)
-                .cloned()
-        }
-
-        async fn get_by_id_admin(&self, id: &NoteId) -> Option<Note> {
             self.notes.lock().await.get(id).cloned()
         }
 

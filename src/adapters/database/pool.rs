@@ -27,12 +27,12 @@ pub async fn create_pool(workers: usize) -> DbPool {
         .connect_with(connect_options)
         .await
         .unwrap_or_else(|e| {
-            log::error!("Failed to connect to database: {}", e);
+            log::error!("connecting to database: {}", e);
             std::process::exit(1);
         });
 
     sqlx::migrate!().run(&pool).await.unwrap_or_else(|e| {
-        log::error!("Failed to run migrations: {}", e);
+        log::error!("running database migrations: {}", e);
         std::process::exit(1);
     });
 

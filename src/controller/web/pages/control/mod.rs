@@ -5,12 +5,13 @@ use leptos_meta::Title;
 use leptos_router::hooks::use_navigate;
 use crate::controller::web::lib::api;
 use crate::controller::web::store::session::SessionStore;
+use crate::domain::models::note::NoteId;
 
 #[derive(Clone, PartialEq)]
 pub enum AdminView {
     Overview,
     NewPost,
-    EditPost(String),
+    EditPost(NoteId),
 }
 
 #[component]
@@ -28,7 +29,7 @@ pub fn Page() -> impl IntoView {
     });
 
     let notes = Resource::new(|| (), |_| async move {
-        api::notes::list_as_admin().await.unwrap_or_default()
+        api::notes::list(None, 1000, 0).await.unwrap_or_default()
     });
 
     view! {

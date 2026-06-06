@@ -39,7 +39,7 @@ async fn main() {
     default_user::run(&*ioc).await.expect("seeding default user");
 
     tokio::spawn(session_vacuum::run(
-        db_pool.clone(),
+        ioc.clone(),
         Duration::from_secs(60 * 60),
     ));
 
@@ -124,11 +124,11 @@ async fn main() {
         rustls::crypto::aws_lc_rs::default_provider().install_default().expect("failed to install TLS crypto provider");
 
         let mut key_file = BufReader::new(File::open(&tls.key).unwrap_or_else(|e| {
-            log::error!("Failed to open TLS key: {}", e);
+            log::error!("opening TLS key file: {}", e);
             std::process::exit(1);
         }));
         let mut certs_file = BufReader::new(File::open(&tls.cert).unwrap_or_else(|e| {
-            log::error!("Failed to open TLS cert: {}", e);
+            log::error!("opening TLS cert file: {}", e);
             std::process::exit(1);
         }));
 

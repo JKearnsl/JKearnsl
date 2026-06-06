@@ -18,12 +18,14 @@ pub fn Content(post: crate::domain::models::note::Note) -> impl IntoView {
             use web_sys::window;
             let closure = wasm_bindgen::closure::Closure::wrap(Box::new(move || {
                 if let Some(win) = window() {
-                    let doc = win.document().unwrap();
-                    let el = doc.document_element().unwrap();
-                    let scroll = el.scroll_top() as f64;
-                    let total = (el.scroll_height() - el.client_height()) as f64;
-                    if total > 0.0 {
-                        progress.set(scroll / total);
+                    if let Some(doc) = win.document() {
+                        if let Some(el) = doc.document_element() {
+                            let scroll = el.scroll_top() as f64;
+                            let total = (el.scroll_height() - el.client_height()) as f64;
+                            if total > 0.0 {
+                                progress.set(scroll / total);
+                            }
+                        }
                     }
                 }
             }) as Box<dyn Fn()>);

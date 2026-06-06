@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use crate::controller::web::pages::control::AdminView;
-use crate::domain::models::note::NoteListItem;
+use crate::domain::models::note::{NoteId, NoteListItem};
 use crate::controller::web::lib::api;
 use crate::controller::web::components::{
     notes::form::NoteFormFields,
@@ -9,7 +9,7 @@ use crate::controller::web::components::{
 
 #[component]
 pub fn Section(
-    note_id: String,
+    note_id: NoteId,
     notes: Resource<Vec<NoteListItem>>,
     view: RwSignal<AdminView>,
 ) -> impl IntoView {
@@ -17,7 +17,7 @@ pub fn Section(
 
     let note_res = Resource::new(
         move || note_id.get_value(),
-        |id| async move { api::notes::get_for_edit(id).await.ok().flatten() },
+        |id| async move { api::notes::by_id(id).await.ok().flatten() },
     );
 
     view! {

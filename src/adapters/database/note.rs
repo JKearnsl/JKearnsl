@@ -81,24 +81,6 @@ impl NoteReader for NoteGateway {
              FROM notes n \
              LEFT JOIN note_tags nt ON n.id = nt.note_id \
              LEFT JOIN tags t ON nt.tag_id = t.id \
-             WHERE n.id = ? AND n.state = 'Published' \
-             GROUP BY n.id"
-        )
-        .bind(id)
-        .fetch_optional(&self.inner)
-        .await
-        .ok()??;
-        row_to_note(&row).ok()
-    }
-
-    async fn get_by_id_admin(&self, id: &NoteId) -> Option<Note> {
-        let row = sqlx::query(
-            "SELECT n.id, n.no, n.slug, n.category, n.title, n.description, n.body, \
-             n.featured, n.state, n.created_at, n.updated_at, \
-             GROUP_CONCAT(t.name, ',') as tags \
-             FROM notes n \
-             LEFT JOIN note_tags nt ON n.id = nt.note_id \
-             LEFT JOIN tags t ON nt.tag_id = t.id \
              WHERE n.id = ? \
              GROUP BY n.id"
         )

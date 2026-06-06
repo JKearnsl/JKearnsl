@@ -59,21 +59,22 @@ pub fn Page() -> impl IntoView {
                 <div class="wrap">
                     <div class="columns-3 [column-gap:18px] max-[900px]:columns-2 max-[560px]:columns-1">
                         {move || {
-                            let current = GAL_CATS.iter().find(|c| c.id == cat.get()).unwrap();
-                            (0..current.count).map(|i| {
-                                let slot_id = format!("{}-{}", cat.get(), i + 1);
-                                let hint = current.hint;
-                                let color = current.color;
-                                let cap = format!("{:02}", i + 1);
-                                let ar = match i % 3 {
-                                    0 => "3/4",
-                                    1 => "1/1",
-                                    _ => "4/5",
-                                };
-                                view! {
-                                    <ImageSlot id=slot_id ar=ar cap=cap color=color hint=hint/>
-                                }
-                            }).collect_view()
+                            GAL_CATS.iter().find(|c| c.id == cat.get()).map(|current| {
+                                (0..current.count).map(|i| {
+                                    let slot_id = format!("{}-{}", cat.get(), i + 1);
+                                    let hint = current.hint;
+                                    let color = current.color;
+                                    let cap = format!("{:02}", i + 1);
+                                    let ar = match i % 3 {
+                                        0 => "3/4",
+                                        1 => "1/1",
+                                        _ => "4/5",
+                                    };
+                                    view! {
+                                        <ImageSlot id=slot_id ar=ar cap=cap color=color hint=hint/>
+                                    }
+                                }).collect_view()
+                            })
                         }}
                     </div>
                 </div>

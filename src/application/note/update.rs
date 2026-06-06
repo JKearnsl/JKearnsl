@@ -54,7 +54,7 @@ impl Interactor<Input, Output> for UpdateNote<'_> {
             )])));
         }
 
-        let mut note = self.note_reader.get_by_id_admin(&data.id).await
+        let mut note = self.note_reader.get_by_id(&data.id).await
             .ok_or(ApplicationError::NotFound)?;
 
         note.title = data.title;

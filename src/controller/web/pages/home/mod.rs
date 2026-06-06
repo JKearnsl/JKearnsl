@@ -15,8 +15,9 @@ pub fn Page() -> impl IntoView {
     let notes = Resource::new(
         move || filter.get(),
         |cat| async move {
-            let cat_arg = if cat == "all" { None } else { Some(cat) };
-            api::notes::list_by_category(cat_arg).await.unwrap_or_default()
+            use crate::domain::models::note::Category;
+            let cat_arg = if cat == "all" { None } else { Category::try_from(cat.as_str()).ok() };
+            api::notes::list(cat_arg, 200, 0).await.unwrap_or_default()
         },
     );
 

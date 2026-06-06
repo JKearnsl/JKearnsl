@@ -1,14 +1,16 @@
 use cfg_if::cfg_if;
 
 cfg_if! { if #[cfg(feature = "ssr")] {
+    use crate::application::session::vacuum::VacuumSessions;
     use crate::application::note::list::ListNotes;
     use crate::application::note::get_by_slug::GetBySlugNote;
-    use crate::application::note::get_by_id_admin::GetByIdNoteAdmin;
+    use crate::application::note::get_by_id::GetByIdNote;
     use crate::application::note::create::CreateNote;
     use crate::application::note::update::UpdateNote;
     use crate::application::note::delete::DeleteNote;
     use crate::application::session::create::CreateSession;
     use crate::application::user::create::CreateUser;
+    use crate::application::user::get_self::GetUserSelf;
     use crate::application::common::id_provider::IdProvider;
     use crate::domain::models::user::UserId;
 
@@ -45,21 +47,19 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         }
     }
 
-    impl InteractorFactory for IoC {
-        fn list_notes(&self) -> ListNotes<'_> {
-            ListNotes { note_reader: &self.note_gateway, all: false }
-        }
+    const SESSION_TTL_SECS: i64 = 60 * 60 * 24 * 7; // 7 days
 
-        fn list_all_notes(&self) -> ListNotes<'_> {
-            ListNotes { note_reader: &self.note_gateway, all: true }
+    impl InteractorFactory for IoC {
+        fn list_notes(&self, id_provider: Box<dyn IdProvider>) -> ListNotes<'_> {
+            ListNotes { note_reader: &self.note_gateway, id_provider }
         }
 
         fn get_note_by_slug(&self) -> GetBySlugNote<'_> {
             GetBySlugNote { note_reader: &self.note_gateway }
         }
 
-        fn get_note_by_id_admin(&self) -> GetByIdNoteAdmin<'_> {
-            GetByIdNoteAdmin { note_reader: &self.note_gateway }
+        fn get_note_by_id(&self, id_provider: Box<dyn IdProvider>) -> GetByIdNote<'_> {
+            GetByIdNote { note_reader: &self.note_gateway, id_provider }
         }
 
         fn create_note(&self, id_provider: Box<dyn IdProvider>) -> CreateNote<'_> {
@@ -100,6 +100,14 @@ cfg_if! { if #[cfg(feature = "ssr")] {
                 user_gateway: &self.user_gateway,
                 hasher: &self.hasher,
             }
+        }
+
+        fn get_user_self(&self, id_provider: Box<dyn IdProvider>) -> GetUserSelf {
+            GetUserSelf { id_provider }
+        }
+
+        fn vacuum_sessions(&self) -> VacuumSessions<'_> {
+            VacuumSessions { session_vacuum: &self.session_gateway, max_age_secs: SESSION_TTL_SECS }
         }
     }
 }}
