@@ -1,6 +1,6 @@
 use async_trait::async_trait;
-use sqlx::Row;
 use sqlx::AssertSqlSafe;
+use crate::adapters::database::models::notes::{NoteListItemRow, NoteRow};
 use crate::application::common::note_gateway::{
     NoteGateway as NoteGatewayTrait, NoteGatewayError, NoteReader, NoteRemover, NoteWriter,
 };
@@ -14,62 +14,6 @@ impl NoteGateway {
     pub fn new(pool: sqlx::SqlitePool) -> Self {
         Self { inner: pool }
     }
-}
-
-fn parse_tags(s: Option<&str>) -> Vec<String> {
-    match s {
-        Some(s) if !s.is_empty() => s.split(',').map(|t| t.to_string()).collect(),
-        _ => vec![],
-    }
-}
-
-fn row_to_note(row: &sqlx::sqlite::SqliteRow) -> Result<Note, sqlx::Error> {
-    let state_str: String = row.try_get("state")?;
-    let state = State::try_from(state_str.as_str()).unwrap_or(State::Draft);
-    let category_str: String = row.try_get("category")?;
-    let category = Category::try_from(category_str.as_str()).unwrap_or(Category::Prog);
-    let tags_str: Option<String> = row.try_get("tags")?;
-    let featured: i64 = row.try_get("featured")?;
-    let no: i64 = row.try_get("no")?;
-
-    Ok(Note {
-        id: row.try_get("id")?,
-        no: no as u32,
-        slug: row.try_get("slug")?,
-        category,
-        title: row.try_get("title")?,
-        description: row.try_get("description")?,
-        body: row.try_get("body")?,
-        tags: parse_tags(tags_str.as_deref()),
-        featured: featured != 0,
-        state,
-        created_at: row.try_get("created_at")?,
-        updated_at: row.try_get("updated_at")?,
-    })
-}
-
-fn row_to_list_item(row: &sqlx::sqlite::SqliteRow) -> Result<NoteListItem, sqlx::Error> {
-    let tags_str: Option<String> = row.try_get("tags")?;
-    let featured: i64 = row.try_get("featured")?;
-    let no: i64 = row.try_get("no")?;
-    let state_str: String = row.try_get("state")?;
-    let state = State::try_from(state_str.as_str()).unwrap_or(State::Draft);
-    let category_str: String = row.try_get("category")?;
-    let category = Category::try_from(category_str.as_str()).unwrap_or(Category::Prog);
-
-    Ok(NoteListItem {
-        id: row.try_get("id")?,
-        no: no as u32,
-        slug: row.try_get("slug")?,
-        category,
-        title: row.try_get("title")?,
-        description: row.try_get("description")?,
-        tags: parse_tags(tags_str.as_deref()),
-        featured: featured != 0,
-        state,
-        created_at: row.try_get("created_at")?,
-        updated_at: row.try_get("updated_at")?,
-    })
 }
 
 const NOTE_SELECT: &str =
@@ -91,18 +35,21 @@ const LIST_SELECT: &str =
 #[async_trait]
 impl NoteReader for NoteGateway {
     async fn by_id(&self, id: &NoteId) -> Result<Note, NoteGatewayError> {
-        let row = sqlx::query(AssertSqlSafe(format!("{} WHERE n.id = ? GROUP BY n.id", NOTE_SELECT)))
-            .bind(id)
-            .fetch_optional(&self.inner)
-            .await
-            .map_err(|e| NoteGatewayError::Internal(e.to_string()))?
-            .ok_or(NoteGatewayError::NotFound)?;
+        let row: NoteRow = sqlx::query_as(AssertSqlSafe(format!(
+            "{} WHERE n.id = ? GROUP BY n.id",
+            NOTE_SELECT
+        )))
+        .bind(id)
+        .fetch_optional(&self.inner)
+        .await
+        .map_err(|e| NoteGatewayError::Internal(e.to_string()))?
+        .ok_or(NoteGatewayError::NotFound)?;
 
-        row_to_note(&row).map_err(|e| NoteGatewayError::Internal(e.to_string()))
+        Ok(Note::from(row))
     }
 
     async fn by_slug(&self, slug: &str) -> Result<Note, NoteGatewayError> {
-        let row = sqlx::query(AssertSqlSafe(format!(
+        let row: NoteRow = sqlx::query_as(AssertSqlSafe(format!(
             "{} WHERE n.slug = ? AND n.state = 'Published' GROUP BY n.id",
             NOTE_SELECT
         )))
@@ -112,7 +59,7 @@ impl NoteReader for NoteGateway {
         .map_err(|e| NoteGatewayError::Internal(e.to_string()))?
         .ok_or(NoteGatewayError::NotFound)?;
 
-        row_to_note(&row).map_err(|e| NoteGatewayError::Internal(e.to_string()))
+        Ok(Note::from(row))
     }
 
     async fn list(
@@ -149,7 +96,7 @@ impl NoteReader for NoteGateway {
             LIST_SELECT, where_clause
         );
 
-        let mut q = sqlx::query(AssertSqlSafe(sql));
+        let mut q = sqlx::query_as::<_, NoteListItemRow>(AssertSqlSafe(sql));
         if let Some(s) = state {
             q = q.bind(s.as_str());
         }
@@ -166,7 +113,7 @@ impl NoteReader for NoteGateway {
             .await
             .map_err(|e| NoteGatewayError::Internal(e.to_string()))?;
 
-        Ok(rows.iter().filter_map(|r| row_to_list_item(r).ok()).collect())
+        Ok(rows.into_iter().map(NoteListItem::from).collect())
     }
 
     async fn next_no(&self) -> Result<u32, NoteGatewayError> {
@@ -207,8 +154,8 @@ impl NoteWriter for NoteGateway {
         .bind(&note.body)
         .bind(featured)
         .bind(state)
-        .bind(note.created_at)
-        .bind(note.updated_at)
+        .bind(note.created_at.timestamp())
+        .bind(note.updated_at.map(|dt| dt.timestamp()))
         .execute(&mut *tx)
         .await
         .map_err(|e| NoteGatewayError::Internal(e.to_string()))?;

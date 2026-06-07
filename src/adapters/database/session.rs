@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sqlx::Row;
+use crate::adapters::database::models::sessions::SessionRow;
 use crate::application::common::session_gateway::{
     SessionGateway, SessionGatewayError, SessionReader, SessionRemover, SessionWriter,
 };
@@ -37,7 +37,7 @@ impl SessionWriter for SqliteSessionGateway {
 #[async_trait]
 impl SessionReader for SqliteSessionGateway {
     async fn by_user_id(&self, user_id: &UserId) -> Result<Vec<Session>, SessionGatewayError> {
-        let rows = sqlx::query(
+        let rows: Vec<SessionRow> = sqlx::query_as(
             "SELECT token_hash, user_id, created_at FROM sessions WHERE user_id = ?"
         )
         .bind(user_id)
@@ -45,19 +45,11 @@ impl SessionReader for SqliteSessionGateway {
         .await
         .map_err(|e| SessionGatewayError::Internal(e.to_string()))?;
 
-        Ok(rows.into_iter()
-            .filter_map(|row| {
-                let token_hash: Vec<u8> = row.try_get("token_hash").ok()?;
-                let user_id: UserId = row.try_get("user_id").ok()?;
-                let created_at_ts: i64 = row.try_get("created_at").ok()?;
-                let created_at = chrono::DateTime::from_timestamp(created_at_ts, 0)?.with_timezone(&chrono::Utc);
-                Some(Session { token_hash: Hash(token_hash), user_id, created_at })
-            })
-            .collect())
+        Ok(rows.into_iter().map(Session::from).collect())
     }
 
     async fn by_token_hash(&self, token_hash: &Hash) -> Result<Option<Session>, SessionGatewayError> {
-        let row = sqlx::query(
+        let row: Option<SessionRow> = sqlx::query_as(
             "SELECT token_hash, user_id, created_at FROM sessions WHERE token_hash = ?"
         )
         .bind(token_hash.0.as_slice())
@@ -65,13 +57,7 @@ impl SessionReader for SqliteSessionGateway {
         .await
         .map_err(|e| SessionGatewayError::Internal(e.to_string()))?;
 
-        Ok(row.and_then(|r| {
-            let token_hash: Vec<u8> = r.try_get("token_hash").ok()?;
-            let user_id: UserId = r.try_get("user_id").ok()?;
-            let created_at_ts: i64 = r.try_get("created_at").ok()?;
-            let created_at = chrono::DateTime::from_timestamp(created_at_ts, 0)?.with_timezone(&chrono::Utc);
-            Some(Session { token_hash: Hash(token_hash), user_id, created_at })
-        }))
+        Ok(row.map(Session::from))
     }
 }
 
