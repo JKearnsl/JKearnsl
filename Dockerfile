@@ -12,19 +12,19 @@ RUN rustup target add wasm32-unknown-unknown
 WORKDIR /work
 COPY . .
 
-RUN cargo leptos build --release -v   v
+RUN cargo leptos build --release --precompress -v   v
 
 FROM rustlang/rust:nightly-alpine as runner
 
 WORKDIR /app
 
-COPY --from=builder /work/target/release/leptos_start /app/
+COPY --from=builder /work/target/release/jkearnsl /app/
 COPY --from=builder /work/target/site /app/site
 COPY --from=builder /work/Cargo.toml /app/
 
 ENV RUST_LOG="info"
 ENV LEPTOS_SITE_ADDR="0.0.0.0:8080"
-ENV LEPTOS_SITE_ROOT=./site
+ENV LEPTOS_SITE_ROOT=./
 EXPOSE 8080
 
-CMD ["/app/leptos_start"]
+ENTRYPOINT ["/app/jkearnsl"]
